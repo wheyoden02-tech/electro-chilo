@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -13,26 +13,52 @@ const legacyApps = [
 const InteractiveZone = () => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-   const matrixRef = useRef(null);
-   const frameRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const matrixRef = useRef(null);
+  const frameRef = useRef(null);
+  const displayRef = useRef(null);
 
-   // Barra fullscreen en móvil
-   const [mobileFullscreenBar, setMobileFullscreenBar] = useState(false);
+  // Barra fullscreen en móvil
+  const [mobileFullscreenBar, setMobileFullscreenBar] = useState(false);
 
-   // Detectar móvil + recordar aceptación pantalla completa
-   useEffect(() => {
-     const ua = navigator.userAgent.toLowerCase();
-     const isMobileUA = /android|iphone|ipad|ipod/.test(ua);
-     const isSmallScreen = window.innerWidth < 768;
+  // Fullscreen detection (option C: both fullscreenElement + fullscreenchange event)
+  const updateFullscreenState = useCallback(() => {
+    setIsFullscreen(!!document.fullscreenElement);
+  }, []);
 
-     const shouldShowHint = isMobileUA && isSmallScreen;
-     const alreadyAccepted = localStorage.getItem("retrozone_fullscreen_accepted") === "1";
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", updateFullscreenState);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenState);
+    return () => {
+      document.removeEventListener("fullscreenchange", updateFullscreenState);
+      document.removeEventListener("webkitfullscreenchange", updateFullscreenState);
+    };
+  }, [updateFullscreenState]);
 
-     if (shouldShowHint && !alreadyAccepted) {
-       setMobileFullscreenBar(true);
-     }
-   }, []);
+  const enterFullscreen = useCallback(() => {
+    const el = displayRef.current || document.getElementById("main-display-area");
+    if (!el) return;
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    }
+  }, []);
 
+  // Detectar móvil + recordar aceptación pantalla completa
+  useEffect(() => {
+    const ua = navigator.userAgent.toLowerCase();
+    const isMobileUA = /android|iphone|ipad|ipod/.test(ua);
+    const isSmallScreen = window.innerWidth < 768;
+    const shouldShowHint = isMobileUA && isSmallScreen;
+    const alreadyAccepted = localStorage.getItem("retrozone_fullscreen_accepted") === "1";
+
+    if (shouldShowHint && !alreadyAccepted) {
+      setMobileFullscreenBar(true);
+    }
+  }, []);
+
+  // Matrix rain animation
   useEffect(() => {
     if (selectedApp) {
       cancelAnimationFrame(frameRef.current);
@@ -55,7 +81,8 @@ const InteractiveZone = () => {
     const drops = Array.from({ length: cols }, () => Math.random() * -150);
     const speeds = Array.from({ length: cols }, () => 0.4 + Math.random() * 1.4);
     const sizes = Array.from({ length: cols }, () => 10 + Math.floor(Math.random() * 7));
-    const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>[]{}!@#$%&*";
+    const chars =
+      "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>[]{}!@#$%&*";
     const colors = ["#00d4ff", "#00ff80", "#00ffcc", "#ffffff", "#00d4ff", "#00ff80"];
 
     const draw = () => {
@@ -93,6 +120,7 @@ const InteractiveZone = () => {
     };
   }, [selectedApp]);
 
+  // Loading state on game select
   useEffect(() => {
     if (selectedApp) {
       setIsLoading(true);
@@ -104,7 +132,6 @@ const InteractiveZone = () => {
   return (
     <main className="min-h-screen w-full bg-[#0a0a0a] text-gray-100 px-6 py-12 md:px-12 selection:bg-cyan-500/30">
       <div className="max-w-6xl mx-auto space-y-10">
-
         {/* Header */}
         <header className="text-center space-y-4">
           <h1 className="text-5xl md:text-6xl font-bold text-cyan-400 drop-shadow-[0_0_20px_rgba(34,211,238,0.8)] tracking-tighter">
@@ -112,7 +139,9 @@ const InteractiveZone = () => {
           </h1>
           <p className="max-w-2xl mx-auto text-gray-400 text-lg">
             Recuerdos de cortesía para la comunidad de Chiloé.
-            <span className="block text-sm mt-1 opacity-60 italic">Tecnología de punta, alma de archipiélago.</span>
+            <span className="block text-sm mt-1 opacity-60 italic">
+              Tecnología de punta, alma de archipiélago.
+            </span>
           </p>
         </header>
 
@@ -124,15 +153,20 @@ const InteractiveZone = () => {
               onClick={() => setSelectedApp(app)}
               className={`
                 relative rounded-xl border-2 overflow-hidden transition-all duration-300 group text-left
-                ${selectedApp?.id === app.id
-                  ? "border-green-400 shadow-[0_0_24px_rgba(74,222,128,0.35)]"
-                  : "border-gray-700 hover:border-cyan-400 hover:shadow-[0_0_16px_rgba(34,211,238,0.25)]"}
+                ${
+                  selectedApp?.id === app.id
+                    ? "border-green-400 shadow-[0_0_24px_rgba(74,222,128,0.35)]"
+                    : "border-gray-700 hover:border-cyan-400 hover:shadow-[0_0_16px_rgba(34,211,238,0.25)]"
+                }
               `}
             >
               <div className="bg-gray-900 w-full">
                 <div className="relative">
                   <img
-                    src={app.img || `https://placehold.co/300x180/0d1117/00d4ff?text=${encodeURIComponent(app.label)}`}
+                    src={
+                      app.img ||
+                      `https://placehold.co/300x180/0d1117/00d4ff?text=${encodeURIComponent(app.label)}`
+                    }
                     alt={app.label}
                     className="w-full object-cover h-32"
                   />
@@ -141,9 +175,13 @@ const InteractiveZone = () => {
                   </span>
                 </div>
                 <div className="p-3">
-                  <p className="font-bold text-sm text-center leading-tight">{app.label}</p>
+                  <p className="font-bold text-sm text-center leading-tight">
+                    {app.label}
+                  </p>
                   {selectedApp?.id === app.id && (
-                    <p className="text-green-400 font-mono text-xs text-center mt-1">▶ JUGANDO</p>
+                    <p className="text-green-400 font-mono text-xs text-center mt-1">
+                      ▶ JUGANDO
+                    </p>
                   )}
                 </div>
               </div>
@@ -165,85 +203,109 @@ const InteractiveZone = () => {
                 SELECCIONA UN JUEGO ARRIBA ↑
               </p>
             )}
-              
-              {mobileFullscreenBar && (
-                <div className="mb-3 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500/30 to-green-500/30 border border-cyan-400/40 text-center shadow-[0_0_12px_rgba(34,211,238,0.45)] flex items-center justify-between gap-3 backdrop-blur-sm">
-                  <div className="flex items-center gap-2 text-cyan-300 font-mono text-xs">
-                    <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
-                    Mejor en pantalla completa
-                  </div>
 
+            {mobileFullscreenBar && (
+              <div className="mb-3 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500/30 to-green-500/30 border border-cyan-400/40 text-center shadow-[0_0_12px_rgba(34,211,238,0.45)] flex items-center justify-between gap-3 backdrop-blur-sm">
+                <div className="flex items-center gap-2 text-cyan-300 font-mono text-xs">
+                  <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
+                  Mejor en pantalla completa
+                </div>
+
+                <button
+                  onClick={() => {
+                    enterFullscreen();
+                    localStorage.setItem("retrozone_fullscreen_accepted", "1");
+                    setMobileFullscreenBar(false);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-cyan-600 text-xs font-bold text-black shadow-[0_0_8px_rgba(34,211,238,0.9)] active:scale-95 transition-transform"
+                >
+                  Entrar en pantalla completa
+                </button>
+              </div>
+            )}
+
+            <div
+              id="main-display-area"
+              ref={displayRef}
+              className="aspect-video w-full bg-black rounded-xl border border-cyan-900/50 flex flex-col overflow-hidden relative"
+            >
+              {/* Fullscreen button — only visible when NOT in fullscreen */}
+              {!isFullscreen && (
+                <div className="flex justify-end p-2 shrink-0">
                   <button
-                    onClick={() => {
-                      const el = document.getElementById('main-display-area');
-                      if (el && el.requestFullscreen) {
-                        el.requestFullscreen();
-                        localStorage.setItem('retrozone_fullscreen_accepted', '1');
-                        setMobileFullscreenBar(false);
-                      }
-                    }}
-                    className="px-3 py-1.5 rounded-lg bg-cyan-600 text-xs font-bold text-black shadow-[0_0_8px_rgba(34,211,238,0.9)] active:scale-95 transition-transform"
+                    onClick={enterFullscreen}
+                    className="px-2.5 py-1 text-[11px] font-mono text-gray-400 hover:text-cyan-400 bg-black/60 hover:bg-black/80 border border-gray-700 hover:border-cyan-500/50 rounded-md transition-all duration-200"
+                    title="Pantalla completa"
                   >
-                    Entrar en pantalla completa
+                    Pantalla completa
                   </button>
                 </div>
               )}
 
-              <div
-                id="main-display-area"
-              className="aspect-video w-full bg-black rounded-xl border border-cyan-900/50 flex items-center justify-center overflow-hidden relative"
-            >
-              <AnimatePresence mode="wait">
-                {selectedApp ? (
-                  isLoading ? (
-                    <motion.div
-                      key="loader"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="flex flex-col items-center gap-4"
-                    >
-                      <div className="w-12 h-12 border-4 border-t-green-400 border-cyan-900 rounded-full animate-spin"></div>
-                      <p className="text-green-400 font-mono text-sm animate-pulse">
-                        CARGANDO CORE: {selectedApp.core.toUpperCase()}...
-                      </p>
-                    </motion.div>
+              {/* Emulator content area */}
+              <div className="flex-1 flex items-center justify-center relative min-h-0">
+                <AnimatePresence mode="wait">
+                  {selectedApp ? (
+                    isLoading ? (
+                      <motion.div
+                        key="loader"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex flex-col items-center gap-4"
+                      >
+                        <div className="w-12 h-12 border-4 border-t-green-400 border-cyan-900 rounded-full animate-spin"></div>
+                        <p className="text-green-400 font-mono text-sm animate-pulse">
+                          CARGANDO CORE: {selectedApp.core.toUpperCase()}...
+                        </p>
+                      </motion.div>
+                    ) : (
+                      <motion.iframe
+                        key="emulator"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        src={`/emulator/index.html?rom=${selectedApp.rom}&system=${selectedApp.core}`}
+                        className="w-full h-full border-none"
+                        title="Legacy System Render"
+                        allow="gamepad"
+                      />
+                    )
                   ) : (
-                    <motion.iframe
-                      key="emulator"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                      src={`/emulator/index.html?rom=${selectedApp.rom}&system=${selectedApp.core}`}
-                      className="w-full h-full border-none"
-                      title="Legacy System Render"
-                      allow="gamepad"
-                    />
-                  )
-                ) : (
-                  <motion.div
-                    key="idle"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center"
-                  >
-                    {/* Canvas Matrix */}
-                    <canvas
-                      ref={matrixRef}
-                      className="absolute inset-0 w-full h-full"
-                    />
-
-                    {/* Ícono idle encima del matrix */}
                     <motion.div
-                      animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.06, 1] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className="relative z-10 flex flex-col items-center gap-3"
+                      key="idle"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 flex flex-col items-center justify-center"
                     >
-                      <i className="fa-solid fa-gamepad text-6xl text-cyan-400 drop-shadow-[0_0_16px_rgba(34,211,238,0.8)]"></i>
-                      <p className="font-mono text-cyan-400 text-sm tracking-widest drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">
-                        SELECCIONA UN JUEGO
-                      </p>
+                      {/* Canvas Matrix */}
+                      <canvas
+                        ref={matrixRef}
+                        className="absolute inset-0 w-full h-full"
+                      />
+
+                      {/* Ícono idle encima del matrix */}
+                      <motion.div
+                        animate={{
+                          opacity: [0.5, 1, 0.5],
+                          scale: [1, 1.06, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className="relative z-10 flex flex-col items-center gap-3"
+                      >
+                        <i className="fa-solid fa-gamepad text-6xl text-cyan-400 drop-shadow-[0_0_16px_rgba(34,211,238,0.8)]"></i>
+                        <p className="font-mono text-cyan-400 text-sm tracking-widest drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]">
+                          SELECCIONA UN JUEGO
+                        </p>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </section>
@@ -285,7 +347,8 @@ const InteractiveZone = () => {
             </div>
           </div>
           <p className="text-gray-600 text-xs italic">
-            Todos los controles aparecen en la barra debajo del juego al seleccionarlo
+            Todos los controles aparecen en la barra debajo del juego al
+            seleccionarlo
           </p>
         </section>
 
@@ -312,7 +375,13 @@ const InteractiveZone = () => {
             rel="noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={{ boxShadow: ["0 0 10px #00ff8033", "0 0 25px #00ff8066", "0 0 10px #00ff8033"] }}
+            animate={{
+              boxShadow: [
+                "0 0 10px #00ff8033",
+                "0 0 25px #00ff8066",
+                "0 0 10px #00ff8033",
+              ],
+            }}
             transition={{ repeat: Infinity, duration: 2 }}
             className="px-10 py-5 bg-green-500 text-black font-black text-lg rounded-2xl flex items-center gap-3 shadow-lg"
           >
@@ -327,7 +396,6 @@ const InteractiveZone = () => {
             <i className="fa-solid fa-arrow-left"></i> Volver al Taller
           </Link>
         </section>
-
       </div>
     </main>
   );
