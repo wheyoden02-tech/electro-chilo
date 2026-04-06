@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, Gamepad2 } from "lucide-react";
 
 const WHATSAPP_URL = "https://wa.me/56912345678?text=Hola%20ElectroRepara%2C%20necesito%20una%20cotización";
 
@@ -23,6 +24,18 @@ const Navbar = () => {
         </a>
 
         <div className="hidden md:flex items-center gap-8">
+          <motion.div
+            animate={{ opacity: [1, 0.3, 1], scale: [1, 1.05, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+          >
+            <Link
+              to="/retro-zone"
+              className="flex items-center gap-1.5 text-sm font-semibold text-cyan-400 transition-colors drop-shadow-[0_0_15px_rgba(34,211,238,0.9)]"
+            >
+              <Gamepad2 className="w-4 h-4" />
+              Retoma tu infancia acá ➔
+            </Link>
+          </motion.div>
           {["Servicios", "Nosotros", "Casos de Éxito"].map((item) => (
             <a
               key={item}
@@ -67,6 +80,19 @@ const Navbar = () => {
                 {item}
               </a>
             ))}
+            <motion.div
+              animate={{ opacity: [1, 0.3, 1], scale: [1, 1.05, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+            >
+              <Link
+                to="/retro-zone"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-1.5 font-semibold text-cyan-400 transition-colors drop-shadow-[0_0_15px_rgba(34,211,238,0.9)]"
+              >
+                <Gamepad2 className="w-4 h-4" />
+                Retoma tu infancia acá ➔
+              </Link>
+            </motion.div>
             <a
               href={WHATSAPP_URL}
               target="_blank"

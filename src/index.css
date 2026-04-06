@@ -277,3 +277,33 @@
   0% { transform: translateX(-20px); opacity: 0.6; }
   100% { transform: translateX(20px); opacity: 1; }
 }
+
+/* MATRIX RAIN ANIMATION */
+.matrix-rain {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.matrix-column {
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+  font-size: 12px;
+  color: #00ff7f;
+  animation: matrix-fall linear infinite;
+  opacity: 0.85;
+  text-shadow: 0 0 8px rgba(0,255,128,0.7);
+}
+
+/* Keyframes — real Matrix falling effect */
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
