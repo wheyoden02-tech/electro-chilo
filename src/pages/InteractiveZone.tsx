@@ -358,7 +358,7 @@ const InteractiveZone = () => {
             ¿Tu consola real no arranca?
           </p>
           <a
-            href="https://wa.me/569XXXXXXXX?text=Hola%20ElectroRepara!%20Vi%20la%20Retro%20Zone%20y%20necesito%20reparar%20mi%20consola"
+            href="https://wa.me/56929810915?text=Hola%20ElectroRepara!%20Vi%20la%20Retro%20Zone%20y%20necesito%20reparar%20mi%20consola"
             target="_blank"
             rel="noreferrer"
             className="font-bold text-green-400 animate-pulse text-sm hover:text-green-300 transition-colors"
@@ -370,7 +370,7 @@ const InteractiveZone = () => {
         {/* Botón WhatsApp + volver */}
         <section className="flex flex-col items-center gap-6 pt-4 pb-8">
           <motion.a
-            href="https://wa.me/569XXXXXXXX?text=Hola%20ElectroRepara!%20Vengo%20de%20la%20Zona%20Retro%20y%20necesito%20reparar%20mi%20equipo"
+            href="https://wa.me/56929810915?text=Hola%20ElectroRepara!%20Vengo%20de%20la%20Zona%20Retro%20y%20necesito%20reparar%20mi%20equipo"
             target="_blank"
             rel="noreferrer"
             whileHover={{ scale: 1.05 }}
