@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Cpu } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import switchHero from "@/assets/nintendo-switch-hero.png";
 
 const WHATSAPP_URL = "https://wa.me/56912345678?text=Hola%20ElectroRepara%2C%20necesito%20una%20cotización";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 grid-pattern opacity-30" />
+      {/* Shingle circuit background */}
+      <div className="absolute inset-0 shingle-pattern" />
       <div className="absolute inset-0 scan-line pointer-events-none" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px]" />
@@ -25,7 +26,7 @@ const HeroSection = () => {
               <span className="text-xs font-mono text-primary">SERVICIO TÉCNICO CERTIFICADO</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6 palafito-title-glow">
               Especialistas en{" "}
               <span className="text-gradient-neon">revivir tu tecnología</span>{" "}
               en Chiloé
@@ -71,7 +72,7 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Right - GSAP placeholder */}
+          {/* Right - Exploded layout placeholder */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -79,24 +80,50 @@ const HeroSection = () => {
             className="hidden lg:flex items-center justify-center"
           >
             <div
-              id="gsap-hero-container"
+              id="hero-exploded-layout"
               className="relative w-full aspect-square max-w-lg rounded-2xl border border-border/50 bg-card/30 flex items-center justify-center overflow-hidden"
             >
-              {/* Animated placeholder */}
-              <div className="absolute inset-0 grid-pattern opacity-20" />
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="relative z-10 flex flex-col items-center gap-4"
-              >
-                <div className="p-6 rounded-2xl border border-primary/20 bg-primary/5 neon-glow-green">
-                  <Cpu className="w-16 h-16 text-primary" />
+              {/* Shingle pattern overlay */}
+              <div className="absolute inset-0 shingle-pattern opacity-30" />
+
+              {/* Exploded component layout */}
+              <div className="relative z-10 flex flex-col items-center gap-6 p-8">
+                {/* Main device image */}
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative"
+                >
+                  <img
+                    src={switchHero}
+                    alt="Nintendo Switch - Servicio técnico especializado"
+                    className="w-72 rounded-lg opacity-90"
+                    style={{
+                      filter: "drop-shadow(0 0 30px hsl(185 100% 50% / 0.2))",
+                    }}
+                  />
+                </motion.div>
+
+                {/* Exploded component labels */}
+                <div className="flex justify-between w-full px-4">
+                  {["Joy-Con L", "Mainboard", "Joy-Con R"].map((part, i) => (
+                    <motion.div
+                      key={part}
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 3, repeat: Infinity, delay: i * 0.5 }}
+                      className="flex flex-col items-center gap-1"
+                    >
+                      <div className={`w-2 h-2 rounded-full ${i === 1 ? "bg-primary" : "bg-accent"}`} />
+                      <span className="text-[10px] font-mono text-muted-foreground">{part}</span>
+                    </motion.div>
+                  ))}
                 </div>
-                <p className="text-xs font-mono text-muted-foreground text-center">
-                  // GSAP Animation Slot<br />
-                  // Nintendo Switch Teardown
+
+                <p className="text-[10px] font-mono text-muted-foreground/60 text-center">
+                  // TEARDOWN PRECISION × PALAFITO CRAFT
                 </p>
-              </motion.div>
+              </div>
+
               {/* Corner accents */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary/40 rounded-tl-lg" />
               <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-accent/40 rounded-tr-lg" />

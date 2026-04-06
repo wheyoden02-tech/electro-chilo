@@ -74,6 +74,12 @@
     @apply bg-card/60 backdrop-blur-xl border border-border/50;
   }
 
+  .glass-green {
+    background: hsl(145 100% 45% / 0.03);
+    backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
   .neon-glow-green {
     box-shadow: var(--glow-green);
   }
@@ -90,11 +96,124 @@
     animation: pulse-wa 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  /* Circuit-shingle pattern: tejuelas drawn as neon cyan circuit lines */
+  .shingle-pattern {
+    background-image:
+      /* Horizontal shingle rows */
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 28px,
+        hsl(var(--neon-cyan) / 0.06) 28px,
+        hsl(var(--neon-cyan) / 0.06) 29px
+      ),
+      /* Offset vertical lines (like staggered shingles / circuit traces) */
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 38px,
+        hsl(var(--neon-cyan) / 0.04) 38px,
+        hsl(var(--neon-cyan) / 0.04) 39px
+      ),
+      /* Second row offset */
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 19px,
+        hsl(var(--neon-cyan) / 0.03) 19px,
+        hsl(var(--neon-cyan) / 0.03) 20px
+      );
+    background-size: 40px 30px, 40px 60px, 40px 60px;
+    background-position: 0 0, 0 0, 20px 30px;
+  }
+
+  /* Original grid pattern */
   .grid-pattern {
     background-image: 
       linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
     background-size: 60px 60px;
+  }
+
+  /* Carbonized wood texture with neon data veins */
+  .carbonized-wood {
+    background:
+      /* Horizontal wood grain lines */
+      repeating-linear-gradient(
+        2deg,
+        transparent,
+        transparent 6px,
+        hsl(0 0% 8% / 0.8) 6px,
+        hsl(0 0% 8% / 0.8) 7px
+      ),
+      /* Subtle neon data veins */
+      radial-gradient(ellipse 600px 2px at 20% 30%, hsl(var(--neon-cyan) / 0.08), transparent),
+      radial-gradient(ellipse 400px 1px at 70% 50%, hsl(var(--neon-green) / 0.06), transparent),
+      radial-gradient(ellipse 500px 2px at 40% 70%, hsl(var(--neon-cyan) / 0.05), transparent),
+      radial-gradient(ellipse 300px 1px at 80% 20%, hsl(var(--neon-green) / 0.04), transparent),
+      /* Base dark wood */
+      linear-gradient(180deg, hsl(0 0% 5%), hsl(0 0% 4%));
+  }
+
+  /* Pilote/stilt bottom border effect */
+  .pilote-border {
+    position: relative;
+  }
+  .pilote-border::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 10%;
+    right: 10%;
+    height: 20px;
+    background:
+      /* Vertical stilts */
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 18px,
+        hsl(var(--neon-green) / 0.25) 18px,
+        hsl(var(--neon-green) / 0.25) 20px,
+        transparent 20px,
+        transparent 22px
+      ),
+      /* Cross braces */
+      linear-gradient(
+        135deg,
+        transparent 40%,
+        hsl(var(--neon-green) / 0.1) 40%,
+        hsl(var(--neon-green) / 0.1) 41%,
+        transparent 41%
+      ),
+      linear-gradient(
+        45deg,
+        transparent 40%,
+        hsl(var(--neon-green) / 0.08) 40%,
+        hsl(var(--neon-green) / 0.08) 41%,
+        transparent 41%
+      );
+    mask-image: linear-gradient(to bottom, transparent, black);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black);
+    pointer-events: none;
+  }
+
+  /* Neon palafito silhouette border for hero title */
+  .palafito-title-glow {
+    text-shadow: 0 0 40px hsl(var(--neon-green) / 0.15);
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--neon-green) / 0.4) 15%,
+      hsl(var(--neon-green) / 0.6) 25%,
+      hsl(var(--neon-green) / 0.3) 35%,
+      hsl(var(--neon-green) / 0.7) 45%,
+      hsl(var(--neon-green) / 0.4) 55%,
+      hsl(var(--neon-green) / 0.5) 65%,
+      hsl(var(--neon-green) / 0.3) 80%,
+      transparent 100%
+    ) 1;
+    padding-bottom: 8px;
   }
 
   .scan-line {
@@ -104,6 +223,39 @@
       transparent 100%
     );
     animation: scan 4s linear infinite;
+  }
+
+  /* Data mist animation */
+  .data-mist {
+    position: relative;
+    overflow: hidden;
+  }
+  .data-mist::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 200px 100px at 15% 40%, hsl(var(--neon-cyan) / 0.04), transparent),
+      radial-gradient(ellipse 300px 80px at 75% 60%, hsl(var(--neon-green) / 0.03), transparent),
+      radial-gradient(ellipse 250px 60px at 50% 80%, hsl(var(--neon-cyan) / 0.03), transparent);
+    animation: mist-drift 12s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* Shingle divider (for review cards) */
+  .shingle-divider {
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      hsl(var(--neon-cyan) / 0.2),
+      hsl(var(--neon-cyan) / 0.2) 8px,
+      transparent 8px,
+      transparent 12px,
+      hsl(var(--neon-cyan) / 0.1) 12px,
+      hsl(var(--neon-cyan) / 0.1) 16px,
+      transparent 16px,
+      transparent 20px
+    );
   }
 }
 
@@ -119,4 +271,9 @@
 @keyframes scan {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
+}
+
+@keyframes mist-drift {
+  0% { transform: translateX(-20px); opacity: 0.6; }
+  100% { transform: translateX(20px); opacity: 1; }
 }
