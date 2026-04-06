@@ -12,7 +12,7 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
-      className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30"
+      className="fixed top-0 left-0 right-0 z-50 glass-green border-b border-primary/10"
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2 group">
@@ -54,7 +54,7 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className="md:hidden glass border-t border-border/30"
+          className="md:hidden glass-green border-t border-primary/10"
         >
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             {["Servicios", "Nosotros", "Casos de Éxito"].map((item) => (

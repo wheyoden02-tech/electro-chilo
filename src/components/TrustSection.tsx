@@ -36,8 +36,7 @@ const testimonials = [
 
 const TrustSection = () => {
   return (
-    <section id="nosotros" className="py-24 relative">
-      <div className="absolute inset-0 grid-pattern opacity-10" />
+    <section id="nosotros" className="py-24 relative carbonized-wood data-mist">
       <div className="container mx-auto px-4 relative z-10">
         {/* Pillars */}
         <motion.div
@@ -63,7 +62,7 @@ const TrustSection = () => {
               className="text-center p-6"
             >
               <div className="inline-flex p-4 rounded-full bg-primary/10 text-primary mb-4">
-                <pillar.icon size={28} />
+                <pillar.icon size={28} strokeWidth={1.5} />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">{pillar.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{pillar.description}</p>
@@ -82,7 +81,7 @@ const TrustSection = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: n * 0.1 }}
-                className="aspect-square rounded-xl bg-card border border-border/50 flex items-center justify-center overflow-hidden group hover:border-primary/30 transition-colors"
+                className="aspect-square rounded-xl bg-card/60 border border-border/50 flex items-center justify-center overflow-hidden group hover:border-primary/30 transition-colors"
               >
                 <div className="text-center">
                   <div className="w-10 h-10 mx-auto rounded-lg bg-muted mb-2 flex items-center justify-center">
@@ -114,6 +113,8 @@ const TrustSection = () => {
                   ))}
                 </div>
                 <p className="text-sm text-platinum leading-relaxed mb-4">"{t.text}"</p>
+                {/* Shingle divider */}
+                <div className="shingle-divider mb-3" />
                 <p className="text-xs font-semibold text-foreground">{t.name}</p>
               </motion.div>
             ))}

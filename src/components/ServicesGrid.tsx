@@ -70,14 +70,19 @@ const ServicesGrid = () => {
               key={service.title}
               variants={item}
               whileHover={{ y: -4 }}
-              className="group glass rounded-xl p-6 hover:border-primary/40 transition-all duration-300"
+              className="group glass rounded-xl p-6 hover:border-primary/40 transition-all duration-300 pilote-border overflow-visible"
             >
-              <div className={`inline-flex p-3 rounded-lg mb-4 ${
+              {/* Icon with technical precision style */}
+              <div className={`inline-flex p-3 rounded-lg mb-4 relative ${
                 service.accentVar === "primary" 
                   ? "bg-primary/10 text-primary" 
                   : "bg-accent/10 text-accent"
               }`}>
-                <service.icon size={24} />
+                <service.icon size={24} strokeWidth={1.5} />
+                {/* Circuit trace from icon */}
+                <div className={`absolute -right-3 top-1/2 w-3 h-px ${
+                  service.accentVar === "primary" ? "bg-primary/30" : "bg-accent/30"
+                }`} />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">{service.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed mb-4">

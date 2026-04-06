@@ -7,13 +7,15 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <HeroSection />
-      <ServicesGrid />
-      <TrustSection />
-      <Footer />
-      <WhatsAppFloat />
+    <div className="min-h-screen bg-background shingle-pattern">
+      <div className="min-h-screen bg-background/95">
+        <Navbar />
+        <HeroSection />
+        <ServicesGrid />
+        <TrustSection />
+        <Footer />
+        <WhatsAppFloat />
+      </div>
     </div>
   );
 };

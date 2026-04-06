@@ -24,6 +24,13 @@
 - **Sans**: Inter (300–900)
 - **Mono**: JetBrains Mono (badges, código)
 
+## Filosofía Visual: Fusión Palafito × Teardown
+- La marca ElectroRepara se basa en la fusión visual de **Teardown Tech Precision** (exploded views de dispositivos electrónicos) con **Tejuelas y Pilotes de Palafito** (arquitectura tradicional de Castro, Chiloé).
+- El patrón de fondo global reinterpreta las tejuelas de madera como líneas de circuitos integrados en neon cyan.
+- Los bordes inferiores de las tarjetas de servicio simulan los pilotes/puntales que sostienen los palafitos sobre el agua, brillando con luz neón.
+- La sección de confianza usa textura de madera de alerce carbonizada con venas de datos neón flotantes (Atmospheric Data Mist).
+- Los divisores usan el patrón shingle-neón coherente con la navbar.
+
 ## Restricciones de Negocio
 - Solo opera en Chiloé (Castro). No envíos a otras regiones por ahora.
 - Especialización: Apple, Nintendo, consolas, PCs.
