@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Zap, Gamepad2 } from "lucide-react";
 
-const WHATSAPP_URL = "https://wa.me/56912345678?text=Hola%20ElectroRepara%2C%20necesito%20una%20cotización";
+const WHATSAPP_URL = "https://wa.me/56929810915?text=Hola%20ElectroRepara%2C%20necesito%20una%20cotización";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
