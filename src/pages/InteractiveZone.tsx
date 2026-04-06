@@ -13,8 +13,25 @@ const legacyApps = [
 const InteractiveZone = () => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const matrixRef = useRef(null);
-  const frameRef = useRef(null);
+   const matrixRef = useRef(null);
+   const frameRef = useRef(null);
+
+   // Barra fullscreen en móvil
+   const [mobileFullscreenBar, setMobileFullscreenBar] = useState(false);
+
+   // Detectar móvil + recordar aceptación pantalla completa
+   useEffect(() => {
+     const ua = navigator.userAgent.toLowerCase();
+     const isMobileUA = /android|iphone|ipad|ipod/.test(ua);
+     const isSmallScreen = window.innerWidth < 768;
+
+     const shouldShowHint = isMobileUA && isSmallScreen;
+     const alreadyAccepted = localStorage.getItem("retrozone_fullscreen_accepted") === "1";
+
+     if (shouldShowHint && !alreadyAccepted) {
+       setMobileFullscreenBar(true);
+     }
+   }, []);
 
   useEffect(() => {
     if (selectedApp) {
@@ -148,9 +165,32 @@ const InteractiveZone = () => {
                 SELECCIONA UN JUEGO ARRIBA ↑
               </p>
             )}
+              
+              {mobileFullscreenBar && (
+                <div className="mb-3 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500/30 to-green-500/30 border border-cyan-400/40 text-center shadow-[0_0_12px_rgba(34,211,238,0.45)] flex items-center justify-between gap-3 backdrop-blur-sm">
+                  <div className="flex items-center gap-2 text-cyan-300 font-mono text-xs">
+                    <i className="fa-solid fa-up-right-and-down-left-from-center"></i>
+                    Mejor en pantalla completa
+                  </div>
 
-            <div
-              id="main-display-area"
+                  <button
+                    onClick={() => {
+                      const el = document.getElementById('main-display-area');
+                      if (el && el.requestFullscreen) {
+                        el.requestFullscreen();
+                        localStorage.setItem('retrozone_fullscreen_accepted', '1');
+                        setMobileFullscreenBar(false);
+                      }
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-cyan-600 text-xs font-bold text-black shadow-[0_0_8px_rgba(34,211,238,0.9)] active:scale-95 transition-transform"
+                  >
+                    Entrar en pantalla completa
+                  </button>
+                </div>
+              )}
+
+              <div
+                id="main-display-area"
               className="aspect-video w-full bg-black rounded-xl border border-cyan-900/50 flex items-center justify-center overflow-hidden relative"
             >
               <AnimatePresence mode="wait">
