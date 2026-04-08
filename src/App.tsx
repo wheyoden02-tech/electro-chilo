@@ -6,24 +6,33 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import InteractiveZone from "./pages/InteractiveZone.tsx";
+import { GamificationProvider } from "./context/UserStatsContext";
+import { BadgeNotification } from "./components/gamification/BadgeNotification";
+import { LevelUpOverlay } from "./components/gamification/LevelUpOverlay";
+import { OnboardingFlow } from "./components/gamification/OnboardingFlow";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/retro-zone" element={<InteractiveZone />} />
-          <Route path="/interactive-zone" element={<InteractiveZone />} />
-{/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <GamificationProvider>
+      <TooltipProvider>
+        <OnboardingFlow />
+        <LevelUpOverlay />
+        <BadgeNotification />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/retro-zone" element={<InteractiveZone />} />
+            <Route path="/interactive-zone" element={<InteractiveZone />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </GamificationProvider>
   </QueryClientProvider>
 );
 

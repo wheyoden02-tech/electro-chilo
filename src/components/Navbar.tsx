@@ -2,11 +2,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, X, Zap, Gamepad2 } from "lucide-react";
+import { useGamification } from "../hooks/useGamification";
+import { LevelRing } from "./gamification/LevelRing";
+import { GamificationProfile } from "./gamification/GamificationProfile";
 
 const WHATSAPP_URL = "https://wa.me/56929810915?text=Hola%20ElectroRepara%2C%20necesito%20una%20cotización";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { levelProgress } = useGamification();
 
   return (
     <>
@@ -58,6 +62,15 @@ const Navbar = () => {
             >
               Contactar
             </a>
+            
+            {/* Gamification Ring -> Opens Profile Dashboard */}
+            <div className="ml-4 pl-4 border-l border-white/10">
+              <GamificationProfile>
+                <div role="button">
+                  <LevelRing />
+                </div>
+              </GamificationProfile>
+            </div>
           </div>
 
           {/* Hamburger */}
@@ -106,6 +119,15 @@ const Navbar = () => {
             </div>
           </motion.div>
         )}
+        {/* XP Bar (Bottom of navbar) */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/40">
+          <motion.div 
+            className="h-full xp-bar-gradient"
+            initial={{ width: 0 }}
+            animate={{ width: `${levelProgress}%` }}
+            transition={{ type: "spring", stiffness: 50, damping: 15 }}
+          />
+        </div>
       </motion.nav>
 
       {/* ── Barra fija inferior SOLO mobile ──────────────────────── */}

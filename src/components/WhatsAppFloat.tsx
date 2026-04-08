@@ -1,14 +1,18 @@
 import { MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useGamification } from "../hooks/useGamification";
 
 const WHATSAPP_URL = "https://wa.me/56929810915?text=Hola%20ElectroRepara%2C%20necesito%20una%20cotización";
 
 const WhatsAppFloat = () => {
+  const { addXP } = useGamification();
+
   return (
     <motion.a
       href={WHATSAPP_URL}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => addXP(5, "whatsapp-click")}
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ delay: 1, type: "spring" }}
