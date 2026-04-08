@@ -288,15 +288,20 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
       const uid = userIdRef.current;
       if (!uid) return;
 
-      // Build from current stats in state
+      // Read current stats directly from ref to avoid stale closure
+      // Then merge with incoming data and persist atomically
       setStats((prev) => {
         const newStats: UserStats = { ...prev, ...data, isProfileComplete: true };
-        // Persist immediately using the ref-based function
-        persistStats(newStats);
+        // Schedule persist after state update — setDoc with merge keeps it atomic
+        const docRef = doc(db, "gamification", uid);
+        setDoc(docRef, newStats, { merge: true }).catch((err) =>
+          console.error("[saveFullProfile] Firestore error:", err)
+        );
+        saveToLS(uid, newStats);
         return newStats;
       });
     },
-    [persistStats]
+    [] // No dependencies — uses refs and setStats(prev=>) pattern
   );
 
   // ─── Evolution trigger ─────────────────────────────────────────────────────

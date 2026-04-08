@@ -229,9 +229,12 @@ export const checkEvolution = async (currentId: number, currentLevel: number): P
 
     checkTree(chainData.chain);
 
-    if (nextStage && currentLevel >= 1) {
+    if (nextStage) {
       const nextId = parseInt(nextStage.url.split("/").filter(Boolean).pop()!);
-      return nextId;
+      // Only return the next evolution if it actually differs from current
+      if (nextId !== currentId) {
+        return nextId;
+      }
     }
   } catch (err) {
     console.error("Failed to check evolution", err);
