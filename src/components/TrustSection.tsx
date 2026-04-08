@@ -1,128 +1,89 @@
-import { motion } from "framer-motion";
-import { Clock, MapPin, ShieldCheck, Star } from "lucide-react";
+/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
 
-const pillars = [
-  {
-    icon: Clock,
-    title: "Rapidez",
-    description: "Diagnóstico en 24 horas. Mayoría de reparaciones listas en 48-72 hrs.",
-  },
-  {
-    icon: MapPin,
-    title: "Local en Castro",
-    description: "Atención presencial en el corazón de Chiloé. Sin envíos arriesgados.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Transparencia",
-    description: "Cotización antes de reparar. Sin sorpresas. Garantía en cada trabajo.",
-  },
+import { Marquee } from '@/components/ui/marquee';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+
+const reviews = [
+  { name: 'María José', city: 'Castro', body: 'Recuperaron mis datos del iPhone después de un daño por humedad. Seco el servicio.', img: 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=100&h=100&fit=crop' },
+  { name: 'Carlos A.', city: 'Ancud', body: 'Arreglo de Joy-Con drift. El Switch quedó como nuevo.', img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=100&h=100&fit=crop' },
+  { name: 'Javiera Muñoz', city: 'Dalcahue', body: 'Microsoldadura en iPhone 12. Ningún técnico quería tomarlo.', img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=100&h=100&fit=crop' },
+  { name: 'Pedro Campos', city: 'Quellón', body: 'Upgrade de RAM y SSD en mi notebook. Vuela.', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop' },
+  { name: 'Francisca', city: 'Castro', body: 'El mejor servicio técnico de la isla. Honestos y rápidos.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop' },
+  { name: 'Tomás Vera', city: 'Chonchi', body: 'Revivieron mi Switch Lite después de un golpe fuerte. Magia.', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop' },
+  { name: 'Elena R.', city: 'Achao', body: 'Data recovery de mi disco externo. Pensé que lo había perdido todo.', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop' },
+  { name: 'Diego Mancilla', city: 'Ancud', body: 'Cambio de batería y dock del Switch. Excelente trabajo.', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop' },
+  { name: 'Catalina Ruiz', city: 'Castro', body: 'Mi MacBook quedó impecable después de la limpieza profunda.', img: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=100&h=100&fit=crop' },
+  { name: 'José Luis', city: 'Quellón', body: 'Reparación de placa iPhone. Servicio profesional.', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop' },
+  { name: 'Dominga', city: 'Dalcahue', body: 'Mi notebook no encendía. Lo arreglaron en 24 horas.', img: 'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=100&h=100&fit=crop' },
+  { name: 'Ignacio', city: 'Castro', body: 'Reparación de HDMI en PS4. Excelente.', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop' },
+  { name: 'Camila', city: 'Chonchi', body: 'Cambio de pantalla iPhone con repuestos de alta calidad.', img: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&h=100&fit=crop' },
+  { name: 'Carolina', city: 'Achao', body: 'Mi disco duro murió y lograron rescatar mis fotos familiares.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' },
+  { name: 'Miguel', city: 'Ancud', body: 'Joy-Con drift eliminado, quedó perfecto.', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop' },
+  { name: 'Fabiola', city: 'Castro', body: 'Limpieza interna de mi PC. Bajó 20° en juegos.', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop' },
+  { name: 'Rodrigo', city: 'Quellón', body: 'Reparación de placa base. Muy recomendados.', img: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=100&h=100&fit=crop' },
+  { name: 'Valentina', city: 'Dalcahue', body: 'Mi Switch no cargaba. Lo solucionaron rápido.', img: 'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=100&h=100&fit=crop' },
+  { name: 'Sebastián', city: 'Chonchi', body: 'iPhone con corto. Ahora funciona perfecto.', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop' },
+  { name: 'Paola', city: 'Achao', body: 'Rescataron documentos vitales de mi notebook.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' }
 ];
 
-const testimonials = [
-  {
-    name: "María José P.",
-    text: "Me salvaron el iPhone que daban por muerto en Santiago. Increíble el nivel técnico que tienen acá en Castro.",
-  },
-  {
-    name: "Carlos A.",
-    text: "El drift de los Joy-Con de mis hijos, solucionado en un día. 100% recomendado.",
-  },
-  {
-    name: "Francisca R.",
-    text: "Rescataron todos mis datos de un disco duro que no prendía. Eternamente agradecida.",
-  },
-];
-
-const TrustSection = () => {
+function ReviewCard({ img, name, city, body }: any) {
   return (
-    <section id="nosotros" className="py-24 relative carbonized-wood data-mist">
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Pillars */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+    <Card className="w-28 md:w-32 bg-card/40 backdrop-blur-md border-white/5 shadow-sm">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-2 mb-2">
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={img} />
+            <AvatarFallback>{name[0]}</AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="text-xs font-bold leading-tight">{name}</p>
+            <p className="text-[9px] text-primary uppercase">{city}</p>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground italic leading-relaxed">"{body}"</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function TrustSection() {
+  const columns = 6;
+  const speeds = ['[--duration:22s]', '[--duration:28s]', '[--duration:33s]', '[--duration:40s]', '[--duration:45s]', '[--duration:25s]'];
+
+  return (
+    <section className="relative w-full overflow-hidden py-10">
+      <div className="w-full h-[80vh] min-h-[700px] overflow-hidden relative [perspective:1000px]">
+        <div
+          className={cn(
+            'absolute inset-0 flex',
+            'transform-gpu',
+            'rotate-x-[15deg] rotate-y-[-5deg] rotate-z-[5deg]'
+          )}
         >
-          <span className="text-xs font-mono text-accent tracking-widest uppercase">¿Por qué elegirnos?</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-3">
-            Confianza que se <span className="text-gradient-neon">demuestra</span>
-          </h2>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-20">
-          {pillars.map((pillar, i) => (
-            <motion.div
-              key={pillar.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="text-center p-6"
-            >
-              <div className="inline-flex p-4 rounded-full bg-primary/10 text-primary mb-4">
-                <pillar.icon size={28} strokeWidth={1.5} />
-              </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">{pillar.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{pillar.description}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Success Cases Placeholder */}
-        <div id="casos-de-éxito" className="mb-20">
-          <h3 className="text-xl font-bold text-center mb-8 text-foreground">Casos de Éxito</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {[1, 2, 3, 4].map((n) => (
-              <motion.div
-                key={n}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: n * 0.1 }}
-                className="aspect-square rounded-xl bg-card/60 border border-border/50 flex items-center justify-center overflow-hidden group hover:border-primary/30 transition-colors"
+          {/* GRID DE COLUMNAS */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 w-full h-full gap-3 px-3">
+            {Array.from({ length: columns }).map((_, i) => (
+              <Marquee
+                key={i}
+                vertical
+                reverse={i % 2 === 0}
+                className={cn('w-full h-full flex-col', speeds[i])}
               >
-                <div className="text-center">
-                  <div className="w-10 h-10 mx-auto rounded-lg bg-muted mb-2 flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground font-mono">#{n}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Caso de éxito</span>
-                </div>
-              </motion.div>
+                {reviews.map((r, idx) => (
+                  <ReviewCard key={idx} {...r} />
+                ))}
+              </Marquee>
             ))}
           </div>
         </div>
 
-        {/* Testimonials */}
-        <div>
-          <h3 className="text-xl font-bold text-center mb-8 text-foreground">Lo que dicen nuestros clientes</h3>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="glass rounded-xl p-6"
-              >
-                <div className="flex gap-0.5 mb-3">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} size={14} className="fill-primary text-primary" />
-                  ))}
-                </div>
-                <p className="text-sm text-platinum leading-relaxed mb-4">"{t.text}"</p>
-                {/* Shingle divider */}
-                <div className="shingle-divider mb-3" />
-                <p className="text-xs font-semibold text-foreground">{t.name}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        {/* FADES SUPERIORES E INFERIORES */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-background z-20"></div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background z-20"></div>
       </div>
     </section>
   );
-};
-
-export default TrustSection;
+}

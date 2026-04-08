@@ -1,107 +1,237 @@
-import { motion } from "framer-motion";
-import { Smartphone, Gamepad2, Monitor, HardDrive } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import appleImg from "@/assets/apple.png";
+import nintendoImg from "@/assets/nintendo.jpeg";
+import xboxImg from "@/assets/xbox.jpeg";
+import notebookImg from "@/assets/notebook.jpeg";
 
-const services = [
+const SERVICES = [
   {
-    icon: Smartphone,
     title: "Apple Total",
-    description: "Reparación de iPhone, pantallas y baterías sin errores de \"pieza no original\". Diagnóstico avanzado a nivel de placa.",
-    tags: ["iPhone", "iPad", "MacBook"],
-    accentVar: "primary",
+    description: `Micro-cirugía electrónica de alta precisión. Reemplazos sin mensajes de "pieza desconocida" ni advertencias de sistema.`,
+    img: appleImg,
   },
   {
-    icon: Gamepad2,
-    title: "Expertos Nintendo",
-    description: "Solución definitiva de Joy-Con Drift, mantención completa y servicios de software avanzado. La magia existe.",
-    tags: ["Switch", "Joy-Con", "3DS"],
-    accentVar: "accent",
+    title: "Nintendo Magia",
+    description:
+      "Acceso a miles de títulos con sistema dual. Arma tu selección en un entorno 100% independiente y sin riesgos.",
+    img: nintendoImg,
   },
   {
-    icon: Monitor,
     title: "Universo Consolas",
-    description: "Xbox, PlayStation y consolas Retro. Reballing, HDMI, lectores ópticos y más. Todas las generaciones.",
-    tags: ["PS5", "Xbox", "Retro"],
-    accentVar: "primary",
+    description:
+      "Revivimos y potenciamos tu consola favorita. Soporte completo para PlayStation y Xbox de todas las épocas.",
+    img: xboxImg,
   },
   {
-    icon: HardDrive,
-    title: "Cómputo e Integración",
-    description: "Notebooks, armado de PC gamer, rescate de datos y upgrade de componentes. Multimarca.",
-    tags: ["Notebooks", "PC", "Datos"],
-    accentVar: "accent",
+    title: "Cómputo Pro",
+    description:
+      "Soluciones para Notebooks y PC de escritorio. Potencia Gamer, upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
+    img: notebookImg,
   },
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.15 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
-
 const ServicesGrid = () => {
-  return (
-    <section id="servicios" className="py-24 relative">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <span className="text-xs font-mono text-primary tracking-widest uppercase">Servicios</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-3">
-            Soluciones para <span className="text-gradient-neon">cada dispositivo</span>
-          </h2>
-        </motion.div>
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const position = useRef(0);
+  const lastX = useRef(0);
+  const animationRef = useRef<number | null>(null);
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto"
-        >
-          {services.map((service) => (
-            <motion.div
-              key={service.title}
-              variants={item}
-              whileHover={{ y: -4 }}
-              className="group glass rounded-xl p-6 hover:border-primary/40 transition-all duration-300 pilote-border overflow-visible"
-            >
-              {/* Icon with technical precision style */}
-              <div className={`inline-flex p-3 rounded-lg mb-4 relative ${
-                service.accentVar === "primary" 
-                  ? "bg-primary/10 text-primary" 
-                  : "bg-accent/10 text-accent"
-              }`}>
-                <service.icon size={24} strokeWidth={1.5} />
-                {/* Circuit trace from icon */}
-                <div className={`absolute -right-3 top-1/2 w-3 h-px ${
-                  service.accentVar === "primary" ? "bg-primary/30" : "bg-accent/30"
-                }`} />
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">{service.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                {service.description}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {service.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs font-mono px-2.5 py-1 rounded-md bg-muted text-muted-foreground"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+  // --- Movimiento automático C2 (izquierda → reinicio)
+  useEffect(() => {
+    const animate = () => {
+      if (!isDragging) {
+        position.current -= 0.4;
+      }
+
+      const track = trackRef.current;
+      if (track) {
+        const totalWidth = track.scrollWidth;
+        const visibleWidth = track.offsetWidth;
+
+        if (Math.abs(position.current) >= totalWidth - visibleWidth) {
+          position.current = 0;
+        }
+
+        track.style.transform = `translateX(${position.current}px)`;
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [isDragging]);
+
+  // --- Drag manual
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    lastX.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const delta = e.clientX - lastX.current;
+    lastX.current = e.clientX;
+    position.current += delta;
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseLeave = () => setIsDragging(false);
+
+  // --- Touch soporte móvil
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    lastX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const delta = e.touches[0].clientX - lastX.current;
+    lastX.current = e.touches[0].clientX;
+    position.current += delta;
+  };
+
+  const handleTouchEnd = () => setIsDragging(false);
+
+  return (
+    <section
+      id="servicios"
+      className="
+        relative w-full h-screen overflow-hidden
+        shingle-pattern flex flex-col items-center justify-center
+      "
+    >
+      {/* Título */}
+      <div className="mb-12 text-center">
+        <span className="text-xs font-mono text-primary tracking-widest uppercase">
+          Servicios
+        </span>
+        <h2 className="text-3xl md:text-5xl font-bold mt-3 text-gradient-neon drop-shadow-lg">
+          Reparación & Tecnología
+        </h2>
       </div>
+
+      {/* Carrusel tipo C2 */}
+      <div
+        className="
+          relative w-full max-w-7xl overflow-hidden select-none
+          px-4 md:px-8
+        "
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          ref={trackRef}
+          className="flex gap-8 py-6 pointer-events-auto"
+          style={{ transform: "translateX(0px)" }}
+        >
+          {SERVICES.map((service, index) => (
+            <div
+              key={index}
+              className="
+                min-w-[260px] md:min-w-[320px]
+                rounded-2xl overflow-hidden 
+                bg-card/40 backdrop-blur-xl 
+                border border-border/50 
+                shadow-[0_0_25px_hsl(var(--neon-cyan)/0.35)]
+                transition-transform duration-300
+                hover:scale-[1.05]
+                cursor-grab active:cursor-grabbing
+              "
+            >
+              <img
+                src={service.img}
+                alt={service.title}
+                className="w-full h-48 md:h-56 object-cover opacity-90"
+              />
+
+              <div className="p-5 bg-gradient-to-t from-black/70 to-black/20 h-[160px] flex flex-col">
+                <h3
+                  className="
+                    text-lg md:text-xl font-bold 
+                    bg-gradient-to-r from-primary via-accent to-primary 
+                    bg-clip-text text-transparent
+                    drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]
+                  "
+                >
+                  {service.title}
+                </h3>
+
+                <p
+                  className="
+                    text-sm mt-2 leading-relaxed opacity-90
+                    text-transparent bg-clip-text
+                    bg-[linear-gradient(to_right,rgba(0,255,255,0.35),rgba(255,0,255,0.35))]
+                    mix-blend-screen
+                  "
+                >
+                  {service.description}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          {/* Duplicado para loop infinito */}
+          {SERVICES.map((service, index) => (
+            <div
+              key={`copy-${index}`}
+              className="
+                min-w-[260px] md:min-w-[320px]
+                rounded-2xl overflow-hidden 
+                bg-card/40 backdrop-blur-xl 
+                border border-border/50 
+                shadow-[0_0_25px_hsl(var(--neon-cyan)/0.35)]
+                transition-transform duration-300
+                hover:scale-[1.05]
+                cursor-grab active:cursor-grabbing
+              "
+            >
+              <img
+                src={service.img}
+                alt={service.title}
+                className="w-full h-48 md:h-56 object-cover opacity-90"
+              />
+
+              <div className="p-5 bg-gradient-to-t from-black/70 to-black/20 h-[160px] flex flex-col">
+                <h3
+                  className="
+                    text-lg md:text-xl font-bold 
+                    bg-gradient-to-r from-primary via-accent to-primary 
+                    bg-clip-text text-transparent
+                    drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]
+                  "
+                >
+                  {service.title}
+                </h3>
+
+                <p
+                  className="
+                    text-sm mt-2 leading-relaxed opacity-90
+                    text-transparent bg-clip-text
+                    bg-[linear-gradient(to_right,rgba(0,255,255,0.35),rgba(255,0,255,0.35))]
+                    mix-blend-screen
+                  "
+                >
+                  {service.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="mt-6 text-muted-foreground text-sm">
+        ¿No está lo que buscas? No dudes en contáctarnos!
+      </p>
     </section>
   );
 };
