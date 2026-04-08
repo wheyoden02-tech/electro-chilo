@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Bun lockfiles (use npm instead for Cloudflare Pages compatibility)
+bun.lock
+bun.lockb
