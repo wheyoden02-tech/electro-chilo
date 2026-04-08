@@ -10,7 +10,7 @@ const WHATSAPP_URL = "https://wa.me/56929810915?text=Hola%20ElectroRepara%2C%20n
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { levelProgress } = useGamification();
+  const { levelProgress, stats, isAuthenticated, rankColor } = useGamification();
 
   return (
     <>
@@ -29,7 +29,7 @@ const Navbar = () => {
             </span>
           </a>
 
-          {/* Desktop menu */}
+          {/* ═══ Desktop menu ═══ */}
           <div className="hidden md:flex items-center gap-8">
             <motion.div
               animate={{ opacity: [1, 0.3, 1], scale: [1, 1.05, 1] }}
@@ -63,7 +63,7 @@ const Navbar = () => {
               Contactar
             </a>
             
-            {/* Gamification Ring -> Opens Profile Dashboard */}
+            {/* Gamification Ring -> Opens Profile Dashboard (DESKTOP) */}
             <div className="ml-4 pl-4 border-l border-white/10">
               <GamificationProfile>
                 <div role="button">
@@ -73,16 +73,26 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Hamburger */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-foreground"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* ═══ Mobile: LevelRing + Hamburger ═══ */}
+          <div className="md:hidden flex items-center gap-3">
+            {/* Mobile Level Ring (opens profile sheet) */}
+            <GamificationProfile>
+              <div role="button">
+                <LevelRing />
+              </div>
+            </GamificationProfile>
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-foreground"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile dropdown menu */}
+        {/* ═══ Mobile dropdown menu ═══ */}
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -90,6 +100,43 @@ const Navbar = () => {
             className="md:hidden glass-green border-t border-primary/10"
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-4 pb-6">
+              
+              {/* Mini trainer card (mobile only) */}
+              {isAuthenticated && stats.isProfileComplete && (
+                <GamificationProfile>
+                  <div role="button" className="flex items-center gap-3 bg-card/60 p-3 rounded-xl border border-border/50 active:scale-[0.98] transition-transform">
+                    <div className="w-10 h-10 rounded-full border border-primary/40 overflow-hidden bg-gray-900 flex-shrink-0">
+                      {stats.avatarUrl && <img src={stats.avatarUrl} alt="" className="w-full h-full object-contain" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-bold text-primary truncate">{stats.displayName}</div>
+                      <div className="text-[10px] text-muted-foreground font-mono" style={{ color: rankColor }}>
+                        {stats.levelName} • {stats.xp}/{stats.nextLevelXP} EVs
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Ver Pokédex →</span>
+                  </div>
+                </GamificationProfile>
+              )}
+
+              {!isAuthenticated && (
+                <GamificationProfile>
+                  <div role="button" className="flex items-center gap-3 bg-card/60 p-3 rounded-xl border border-primary/30 active:scale-[0.98] transition-transform">
+                    <div className="w-10 h-10 rounded-full border-2 border-gray-600 overflow-hidden relative flex-shrink-0">
+                      <div className="absolute top-0 left-0 right-0 h-1/2 bg-red-500"></div>
+                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-white"></div>
+                      <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-600 -translate-y-1/2"></div>
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border border-gray-600 rounded-full"></div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-yellow-400">¡Recibe un Pokémon gratis!</div>
+                      <div className="text-[10px] text-muted-foreground">Inicia sesión para empezar tu aventura</div>
+                    </div>
+                  </div>
+                </GamificationProfile>
+              )}
+
+              {/* Nav links */}
               {["Servicios", "Nosotros", "Casos de Éxito"].map((item) => (
                 <a
                   key={item}
