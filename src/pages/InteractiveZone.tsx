@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const legacyApps = [
-  { id: "doom", label: "DOOM", core: "gba", rom: "doom.gba", img: null },
-  { id: "dkc", label: "Donkey Kong Country", core: "gba", rom: "dkc.gba", img: null },
-  { id: "smas", label: "Super Mario All-Stars", core: "snes", rom: "smas.sfc", img: null },
-  { id: "mk2", label: "Mortal Kombat II", core: "snes", rom: "mk2.sfc", img: null },
-  { id: "ssf2", label: "Super Street Fighter II", core: "snes", rom: "ssf2.smc", img: null },
+  { id: "doom", label: "DOOM", core: "gba", rom: "doom.gba", img: "/src/assets/doom.jpeg" },
+  { id: "dkc", label: "Donkey Kong Country", core: "gba", rom: "dkc.gba", img: "/src/assets/donkeykong.jpeg" },
+  { id: "smas", label: "Super Mario All-Stars", core: "snes", rom: "smas.sfc", img: "/src/assets/supermario.jpeg" },
+  { id: "mk2", label: "Mortal Kombat II", core: "snes", rom: "mk2.sfc", img: "/src/assets/mk2.jpeg" },
+  { id: "ssf2", label: "Super Street Fighter II", core: "snes", rom: "ssf2.smc", img: "/src/assets/st2.jpeg" },
 ];
 
 const InteractiveZone = () => {
