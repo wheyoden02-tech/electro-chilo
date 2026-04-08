@@ -44,15 +44,20 @@ const Navbar = () => {
               </Link>
             </motion.div>
 
-            {["Servicios", "Nosotros", "Casos de Éxito"].map((item) => (
+            <>
               <a
-                key={item}
-                href={`#${item.toLowerCase().replace(/ /g, "-")}`}
+                href="#servicios"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                {item}
+                Servicios
               </a>
-            ))}
+              <Link
+                to="/tutoriales"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                Tutoriales
+              </Link>
+            </>
 
             <a
               href={WHATSAPP_URL}
@@ -137,16 +142,22 @@ const Navbar = () => {
               )}
 
               {/* Nav links */}
-              {["Servicios", "Nosotros", "Casos de Éxito"].map((item) => (
+              <>
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/ /g, "-")}`}
+                  href="#servicios"
                   onClick={() => setIsOpen(false)}
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {item}
+                  Servicios
                 </a>
-              ))}
+                <Link
+                  to="/tutoriales"
+                  onClick={() => setIsOpen(false)}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Tutoriales
+                </Link>
+              </>
               <Link
                 to="/retro-zone"
                 onClick={() => setIsOpen(false)}

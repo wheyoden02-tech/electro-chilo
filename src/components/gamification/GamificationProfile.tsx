@@ -3,7 +3,14 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../u
 import { useGamification } from "../../hooks/useGamification";
 import { ALL_BADGES } from "../../context/UserStatsContext";
 import { fetchPokemonData, playPokemonCry } from "../../lib/pokeapi";
-import { Zap, Trophy, Lock, LogIn, LogOut, MapPin, Gamepad2 } from "lucide-react";
+import { Zap, Trophy, Lock, LogIn, LogOut, MapPin, Gamepad2, MessageCircle, Search, Cpu, BrainCircuit, Rocket, Skull, Medal } from "lucide-react";
+import { type LucideProps } from "lucide-react";
+
+// BUG-03 FIX: Map badge.icon string → actual Lucide component
+const ICON_MAP: Record<string, React.FC<LucideProps>> = {
+  Zap, MessageCircle, Search, Cpu, Gamepad2, BrainCircuit, Rocket, Skull, Medal, Trophy,
+};
+
 import { motion } from "framer-motion";
 
 export const GamificationProfile = ({ children }: { children: React.ReactNode }) => {
@@ -194,7 +201,10 @@ export const GamificationProfile = ({ children }: { children: React.ReactNode })
                       >
                         {unlocked ? (
                           <>
-                            <Zap size={22} className="text-primary drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]" />
+                            {(() => {
+                              const Icon = ICON_MAP[badge.icon] || Zap;
+                              return <Icon size={22} className="text-primary drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]" />;
+                            })()}
                             <span className="absolute -bottom-1 -right-1 text-[8px] bg-primary text-black font-bold px-1 rounded-sm">✓</span>
                           </>
                         ) : (

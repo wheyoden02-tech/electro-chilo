@@ -347,3 +347,16 @@
 }
 .animate-marquee { animation: marquee var(--duration) linear infinite; }
 .animate-marquee-vertical { animation: marquee-vertical var(--duration) linear infinite; }
+
+/* BUG-02 FIX: Missing utility classes used in components */
+.animate-scanline {
+  animation: scan 3s linear infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px hsl(var(--primary) / 0.6); opacity: 1; }
+  50%       { box-shadow: 0 0 12px hsl(var(--primary) / 0.9); opacity: 0.7; }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
