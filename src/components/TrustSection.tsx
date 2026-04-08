@@ -55,6 +55,14 @@ export default function TrustSection() {
 
   return (
     <section className="relative w-full overflow-hidden py-10">
+
+      {/* TÍTULO HERO */}
+      <div className="absolute top-10 w-full text-center z-30 px-4">
+        <h2 className="text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-emerald-400 via-sky-400 to-fuchsia-500 bg-clip-text text-transparent drop-shadow-xl">
+          Miles de personas de Chiloé y Chile ya confían en nosotros
+        </h2>
+      </div>
+
       <div className="w-full h-[80vh] min-h-[700px] overflow-hidden relative [perspective:1000px]">
         <div
           className={cn(
@@ -63,6 +71,7 @@ export default function TrustSection() {
             'rotate-x-[15deg] rotate-y-[-5deg] rotate-z-[5deg]'
           )}
         >
+
           {/* GRID DE COLUMNAS */}
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 w-full h-full gap-3 px-3">
             {Array.from({ length: columns }).map((_, i) => (
@@ -70,7 +79,11 @@ export default function TrustSection() {
                 key={i}
                 vertical
                 reverse={i % 2 === 0}
-                className={cn('w-full h-full flex-col', speeds[i])}
+                className={cn(
+                  'w-full h-full flex-col',
+                  speeds[i],
+                  i > 2 ? 'hidden lg:flex' : ''
+                )}
               >
                 {reviews.map((r, idx) => (
                   <ReviewCard key={idx} {...r} />
