@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useState, ReactNode } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db, signInWithGoogle, signOut as fbSignOut } from "../lib/firebase";
 import { getRandomStarter, checkEvolution, playPokemonCry, playUISound } from "../lib/pokeapi";
 
@@ -97,16 +97,28 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
           const docRef = doc(db, "gamification", user.uid);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            setStats(docSnap.data() as UserStats);
+            // Merge with defaults so new fields are always present
+            const stored = docSnap.data() as Partial<UserStats>;
+            setStats({ ...DEFAULT_STATS, ...stored });
           } else {
-            // New user in Firestore
+            // New user in Firestore — create document immediately
             const newStats = { ...DEFAULT_STATS, displayName: user.displayName || "Entrenador" };
             await setDoc(docRef, newStats);
             setStats(newStats);
           }
         } catch (error) {
           console.error("Firestore read error:", error);
-          setStats(DEFAULT_STATS);
+          // Try localStorage fallback before giving up
+          const cached = localStorage.getItem("er-gamify-stats");
+          if (cached) {
+            try {
+              setStats({ ...DEFAULT_STATS, ...JSON.parse(cached) });
+            } catch {
+              setStats(DEFAULT_STATS);
+            }
+          } else {
+            setStats(DEFAULT_STATS);
+          }
         }
       } else {
         setUserId(null);
@@ -120,20 +132,15 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
   const persistStats = useCallback(
     async (newStats: UserStats) => {
       setStats(newStats);
-      // LocalStorage backup
+      // LocalStorage backup (always write, acts as safety net)
       localStorage.setItem("er-gamify-stats", JSON.stringify(newStats));
 
-      // Firebase priority
+      // Firebase priority — use setDoc with merge to create-or-update atomically
+      // This eliminates the race condition of getDoc + updateDoc
       if (userId) {
         try {
           const docRef = doc(db, "gamification", userId);
-          // check if exists first
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            await updateDoc(docRef, newStats as any);
-          } else {
-            await setDoc(docRef, newStats);
-          }
+          await setDoc(docRef, newStats, { merge: true });
         } catch (error) {
           console.error("Firestore update error:", error);
         }
@@ -241,17 +248,10 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
   }, [persistStats]);
 
   const saveFullProfile = useCallback(async (data: Partial<UserStats>) => {
-    setStats((prev) => {
-      const newStats = { ...prev, ...data, isProfileComplete: true };
-      
-      // Force Firestore Update Wait
-      if (userId) {
-        const docRef = doc(db, "gamification", userId);
-        updateDoc(docRef, newStats as any).catch(console.error);
-      }
-      return newStats as UserStats;
-    });
-  }, [userId]);
+    const newStats = { ...stats, ...data, isProfileComplete: true } as UserStats;
+    // Use persistStats which handles setDoc with merge + localStorage backup
+    await persistStats(newStats);
+  }, [stats, persistStats]);
 
   // Evolution trigger check
   useEffect(() => {
