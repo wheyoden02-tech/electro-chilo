@@ -35,6 +35,7 @@ interface GamificationContextType {
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
+  isLoadingAuth: boolean;
   recentBadges: Badge[];
   recentLevelUp: boolean;
   clearPopups: () => void;
@@ -75,7 +76,6 @@ const DEFAULT_STATS: UserStats = {
 };
 
 // ─── SCOPED localStorage helpers ──────────────────────────────────────────────
-// Each user gets their OWN key so different accounts never share cached data.
 const lsKey = (uid: string) => `er-gamify-${uid}`;
 
 const loadFromLS = (uid: string): Partial<UserStats> | null => {
@@ -95,7 +95,7 @@ const saveToLS = (uid: string, stats: UserStats) => {
   }
 };
 
-const COOLDOWN_MS = 30000; // 30 seconds cooldown per action
+const COOLDOWN_MS = 30000;
 
 export const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
 
@@ -103,14 +103,20 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
   const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
   const [userId, setUserId] = useState<string | null>(null);
   const [actionHistory, setActionHistory] = useState<Record<string, number>>({});
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
   // Popups state
   const [recentBadges, setRecentBadges] = useState<Badge[]>([]);
   const [recentLevelUp, setRecentLevelUp] = useState(false);
 
-  // ─── FIX: Use a ref for userId so callbacks always get the LATEST value ────
-  // This eliminates the stale closure bug where persistStats used an old userId.
   const userIdRef = useRef<string | null>(null);
+
+  // ★ FIX DEFINITIVO COOP ─────────────────────────────────────────────────────
+  // Solo limpiamos estado cuando el usuario EXPLÍCITAMENTE hace logout.
+  // Todo signOut espurio de Firebase/COOP → ignorado completamente.
+  const logoutIntentRef = useRef(false);
+  const hasEverLoggedInRef = useRef(false);
+
   useEffect(() => {
     userIdRef.current = userId;
   }, [userId]);
@@ -119,33 +125,53 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // ── Signed in ──
+
+        // ★ FIX RACE CONDITION: Re-activar isLoadingAuth CADA VEZ que llega
+        // un evento de login. Sin esto, si isLoadingAuth ya estaba en false
+        // (por carga inicial sin sesión), hay una ventana donde:
+        //   isAuthenticated=true + isProfileComplete=false + isLoadingAuth=false
+        // → el modal de onboarding aparece brevemente antes de que Firestore
+        //   responda con el perfil real del usuario.
+        setIsLoadingAuth(true);
+
+        hasEverLoggedInRef.current = true;
+        logoutIntentRef.current = false;
         setUserId(user.uid);
         userIdRef.current = user.uid;
 
         console.log("[Auth] User signed in:", user.uid, user.email);
+
+        // ★ FAST PATH: Intentar cargar desde localStorage ANTES de Firestore.
+        // Esto pone isProfileComplete=true instantáneamente si el usuario ya
+        // completó el onboarding, eliminando cualquier flash del modal.
+        const lsCache = loadFromLS(user.uid);
+        if (lsCache && lsCache.isProfileComplete) {
+          const cachedStats = { ...DEFAULT_STATS, ...lsCache };
+          setStats(cachedStats);
+          setIsLoadingAuth(false);
+          console.log("[Auth] Fast path: loaded profile from localStorage cache");
+          // Seguimos cargando desde Firestore en background para sincronizar
+        }
 
         try {
           const docRef = doc(db, "gamification", user.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            // ── User exists in Firestore → load their data ──
             const stored = docSnap.data() as Partial<UserStats>;
             const merged = { ...DEFAULT_STATS, ...stored };
             setStats(merged);
-            // Sync localStorage for this specific user
             saveToLS(user.uid, merged as UserStats);
             console.log("[Firestore] Loaded existing user data:", user.uid);
           } else {
-            // ── New user → try localStorage fallback (same UID), then create ──
             const lsFallback = loadFromLS(user.uid);
             const newStats: UserStats = {
               ...DEFAULT_STATS,
-              ...lsFallback, // will be null-safe since spread of null is ignored
+              ...lsFallback,
               displayName: user.displayName || lsFallback?.displayName || "Entrenador",
               avatarUrl: user.photoURL || lsFallback?.avatarUrl || "",
             };
-
             await setDoc(docRef, newStats);
             setStats(newStats);
             saveToLS(user.uid, newStats);
@@ -153,7 +179,6 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
           }
         } catch (error) {
           console.error("[Firestore] Read error for user", user.uid, error);
-          // FIX: Fallback is SCOPED to THIS user's UID, never leaks other user data
           const lsFallback = loadFromLS(user.uid);
           if (lsFallback) {
             console.warn("[Auth] Firestore failed, using scoped localStorage for", user.uid);
@@ -162,15 +187,35 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
             setStats({ ...DEFAULT_STATS, displayName: user.displayName || "Entrenador" });
           }
         }
+
+        setIsLoadingAuth(false);
+
       } else {
-        // ── Signed out ──
-        console.log("[Auth] User signed out — clearing state");
-        setUserId(null);
-        userIdRef.current = null;
-        setStats(DEFAULT_STATS);
-        setActionHistory({});
-        // NOTE: We deliberately do NOT clear localStorage here.
-        // Each user's localStorage is scoped to their UID, so there's no contamination.
+        // ── Signed out event received ──
+
+        // CASO 1: Logout intencional del usuario → limpiar todo
+        if (logoutIntentRef.current) {
+          console.log("[Auth] ✅ Intentional logout — clearing state");
+          setUserId(null);
+          userIdRef.current = null;
+          setStats(DEFAULT_STATS);
+          setActionHistory({});
+          logoutIntentRef.current = false;
+          setIsLoadingAuth(false);
+          return;
+        }
+
+        // CASO 2: Primera carga de página, nunca hubo login → no hay sesión
+        if (!hasEverLoggedInRef.current && !userIdRef.current) {
+          console.log("[Auth] Initial load — no previous session");
+          setIsLoadingAuth(false);
+          return;
+        }
+
+        // CASO 3: SignOut espurio (COOP bug) → IGNORAR completamente.
+        // No tocamos userId, no tocamos stats, no tocamos isLoadingAuth.
+        // Firebase recuperará la sesión con otro onAuthStateChanged(user).
+        console.warn("[Auth] ⚠️ Ignoring spurious signOut (COOP bug) — state preserved");
       }
     });
 
@@ -178,34 +223,29 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // ─── Persist to Firestore + scoped localStorage ───────────────────────────
-  // Uses userIdRef.current so it always has the real current UID (no stale closure).
   const persistStats = useCallback(async (newStats: UserStats) => {
     const uid = userIdRef.current;
     if (!uid) return;
 
     setStats(newStats);
-    // Always write to scoped localStorage as fast backup
     saveToLS(uid, newStats);
 
-    // Write to Firestore — setDoc with merge is atomic create-or-update
     try {
       const docRef = doc(db, "gamification", uid);
       await setDoc(docRef, newStats, { merge: true });
     } catch (error) {
       console.error("[Firestore] Write error:", error);
-      // Data is safe in scoped localStorage — will sync next time
     }
-  }, []); // No [userId] dependency — uses ref instead
+  }, []);
 
   // ─── Add XP ───────────────────────────────────────────────────────────────
   const addXP = useCallback(
     (amount: number, reason: string) => {
-      if (!userIdRef.current) return; // Must be logged in
+      if (!userIdRef.current) return;
 
       const now = Date.now();
       const lastTime = actionHistory[reason] || 0;
 
-      // Anti-spam cooldown
       if (now - lastTime < COOLDOWN_MS && reason !== "konami-code") return;
 
       setActionHistory((prev) => ({ ...prev, [reason]: now }));
@@ -217,7 +257,6 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
         let newNextXP = prev.nextLevelXP;
         let didLevelUp = false;
 
-        // Level up logic
         const nextRank = RANKS.find((r) => r.level === newLevel + 1);
         if (nextRank && newXp >= nextRank.minXP) {
           newLevel = nextRank.level;
@@ -228,7 +267,6 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
           playUISound("levelup", 0.4);
         }
 
-        // Badge logic
         const unlockedBadges: Badge[] = [];
         const newBadgeIds = [...prev.badges];
 
@@ -259,7 +297,6 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
           badges: newBadgeIds,
         };
 
-        // Fire and forget persist (safe because persistStats uses ref, not closure)
         persistStats(newStats);
 
         if (amount > 0 && !didLevelUp) playUISound("xp", 0.2);
@@ -288,11 +325,8 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
       const uid = userIdRef.current;
       if (!uid) return;
 
-      // Read current stats directly from ref to avoid stale closure
-      // Then merge with incoming data and persist atomically
       setStats((prev) => {
         const newStats: UserStats = { ...prev, ...data, isProfileComplete: true };
-        // Schedule persist after state update — setDoc with merge keeps it atomic
         const docRef = doc(db, "gamification", uid);
         setDoc(docRef, newStats, { merge: true }).catch((err) =>
           console.error("[saveFullProfile] Firestore error:", err)
@@ -301,12 +335,12 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
         return newStats;
       });
     },
-    [] // No dependencies — uses refs and setStats(prev=>) pattern
+    []
   );
 
   // ─── Evolution trigger ─────────────────────────────────────────────────────
   useEffect(() => {
-    if (!userIdRef.current) return; // Don't run if not logged in
+    if (!userIdRef.current) return;
     if (stats.pokemonId && stats.level > 0) {
       checkEvolution(stats.pokemonId, stats.level).then((evolvedId) => {
         if (evolvedId && evolvedId !== stats.pokemonId) {
@@ -319,11 +353,20 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
 
   // ─── Auth actions ──────────────────────────────────────────────────────────
   const loginWithGoogle = async () => {
+    // ★ Activar loading ANTES de abrir el popup para que el modal
+    // no pueda aparecer en ningún momento intermedio.
+    setIsLoadingAuth(true);
     await signInWithGoogle();
   };
 
   const logout = async () => {
-    // Clear in-memory state BEFORE signing out to avoid flickers
+    // ★ Marcar INTENCIÓN antes de todo.
+    logoutIntentRef.current = true;
+    // ★ FIX: Limpiar userId ANTES de stats para que isAuthenticated sea false
+    // en el mismo batch de renders. Sin esto, hay un frame donde
+    // isAuthenticated=true + isProfileComplete=false → modal aparece.
+    setUserId(null);
+    userIdRef.current = null;
     setStats(DEFAULT_STATS);
     setActionHistory({});
     setRecentBadges([]);
@@ -346,6 +389,7 @@ export const GamificationProvider = ({ children }: { children: ReactNode }) => {
         loginWithGoogle,
         logout,
         isAuthenticated: !!userId,
+        isLoadingAuth,
         recentBadges,
         recentLevelUp,
         clearPopups,

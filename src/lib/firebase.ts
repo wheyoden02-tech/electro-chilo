@@ -1,8 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut } from "firebase/auth";
+import {
+  getAuth,
+  signInAnonymously,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut as fbSignOut
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Debes rellenar estas variables en tu archivo .env.local
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
@@ -16,7 +21,6 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Autenticación anónima por defecto para invitados (guarda sus puntos)
 export const signInGuest = async () => {
   try {
     const userCredential = await signInAnonymously(auth);
@@ -30,7 +34,6 @@ export const signInGuest = async () => {
 export const signInWithGoogle = async () => {
   try {
     const provider = new GoogleAuthProvider();
-    // Force account selection prompt so users can switch accounts
     provider.setCustomParameters({ prompt: "select_account" });
     const userCredential = await signInWithPopup(auth, provider);
     return userCredential.user;

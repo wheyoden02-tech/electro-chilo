@@ -15,7 +15,7 @@ const AVATARS = [
 ];
 
 export const OnboardingFlow = () => {
-  const { stats, isAuthenticated, saveFullProfile } = useGamification();
+  const { stats, isAuthenticated, isLoadingAuth, saveFullProfile } = useGamification();
   const [step, setStep] = useState(1);
   const [pokemonData, setPokemonData] = useState<any>(null);
   const [assignedPokemonId, setAssignedPokemonId] = useState<number | null>(null);
@@ -28,6 +28,11 @@ export const OnboardingFlow = () => {
     phone: "",
     avatarUrl: AVATARS[0].url,
   });
+
+  // FIX: No renderizar mientras Firebase aún está cargando el perfil.
+  // Sin este guard, el modal aparecía durante ~500ms en CADA visita porque
+  // isProfileComplete era false (DEFAULT_STATS) antes de que Firestore respondiera.
+  if (isLoadingAuth) return null;
 
   // Don't render if not authenticated or if profile is already complete
   if (!isAuthenticated || stats.isProfileComplete) return null;
