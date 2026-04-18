@@ -15,7 +15,7 @@ const ConsoleTicker: React.FC = () => {
               <img
                 src={src}
                 alt="Console logo"
-                className="h-10 sm:h-12 md:h-20 lg:h-24 w-auto transition-all duration-500 ease-out drop-shadow-[0_0_8px_#00E2FF] hover:drop-shadow-[0_0_16px_#00E2FF]"
+                className="h-20 sm:h-16 md:h-20 lg:h-24 w-auto transition-all duration-500 ease-out drop-shadow-[0_0_8px_#00E2FF] hover:drop-shadow-[0_0_16px_#00E2FF]"
                 draggable={false}
               />
             </div>
