@@ -68,22 +68,28 @@ varying float vElevation;
 void main(){
   vec3 pos = position;
 
-  // uFreq escala las frecuencias espaciales — mayor en mobile para más crestas visibles
+  // uFreq escala las frecuencias espaciales
   float n1 = snoise(vec3(pos.x*0.18*uFreq + uTime*0.18,
                          pos.y*0.18*uFreq,
                          uTime*0.12));
 
+  // Segunda octava más suave (0.45 en vez de 0.55)
   float n2 = snoise(vec3(pos.x*0.38*uFreq - uTime*0.09,
                          pos.y*0.42*uFreq + uTime*0.07,
-                         uTime*0.14)) * 0.55;
+                         uTime*0.14)) * 0.45;
 
+  // Tercera octava casi eliminada — era la que creaba picos agresivos
   float n3 = snoise(vec3(pos.x*0.72*uFreq + uTime*0.05,
                          pos.y*0.68*uFreq,
-                         uTime*0.10)) * 0.25;
+                         uTime*0.10)) * 0.10;
 
   float raw = (n1 + n2 + n3) * uAmplitude;
-  pos.z = raw;
-  vElevation = raw;
+
+  // Saturación suave: aplana las puntas de los picos en vez de cortarlas
+  // x / (1 + k|x|) → conserva la forma en valores bajos, redondea las crestas altas
+  float elevation = raw / (1.0 + 0.45 * abs(raw));
+  pos.z = elevation;
+  vElevation = elevation;
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
 }`;
@@ -152,12 +158,12 @@ function WaveCanvas() {
     const geometry = new THREE.PlaneGeometry(15, 15, segs, segs);
     const uniforms = {
       uTime:      { value: 0.0 },
-      // Mobile: amplitud ~2× más alta = crestas/valles muy visibles
-      uAmplitude: { value: isMobile ? 2.2 : 1.1 },
-      // Mobile: mayor frecuencia espacial = más crestas en pantalla pequeña
-      uFreq:      { value: isMobile ? 1.7 : 1.0 },
-      // Mobile: bandas de color más definidas (0.22 = banding fuerte, 0.5 = suave)
-      uContrast:  { value: isMobile ? 0.22 : 0.50 },
+      // Mobile: amplitud moderada — visible pero no agresiva
+      uAmplitude: { value: isMobile ? 1.55 : 1.1 },
+      // Mobile: frecuencia contenida — olas amplias con respiro entre ellas
+      uFreq:      { value: isMobile ? 1.25 : 1.0 },
+      // Mobile: transición definida pero no dura (0.36 = entre suave y marcada)
+      uContrast:  { value: isMobile ? 0.36 : 0.50 },
     };
     const material = new THREE.ShaderMaterial({
       vertexShader,
@@ -181,8 +187,8 @@ function WaveCanvas() {
     window.addEventListener("resize", onResize);
 
     const clock = new THREE.Clock();
-    // Mobile: 1.4× más rápido → movimiento claramente visible
-    const speedMult = isMobile ? 1.4 : 1.0;
+    // Mobile: ligeramente más lento que desktop → flujo líquido, no agitado
+    const speedMult = isMobile ? 0.80 : 1.0;
     let rafId: number;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
