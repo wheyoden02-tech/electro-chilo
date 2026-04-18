@@ -62,29 +62,28 @@ const vertexShader = `
 ${SNOISE_GLSL}
 uniform float uTime;
 uniform float uAmplitude;
+uniform float uFreq;
 varying float vElevation;
 
 void main(){
   vec3 pos = position;
 
-  // Frecuencias reducidas → ondas anchas y curvas (plasma, no picos)
-  float n1 = snoise(vec3(pos.x*0.18 + uTime*0.18,
-                         pos.y*0.18,
+  // uFreq escala las frecuencias espaciales — mayor en mobile para más crestas visibles
+  float n1 = snoise(vec3(pos.x*0.18*uFreq + uTime*0.18,
+                         pos.y*0.18*uFreq,
                          uTime*0.12));
 
-  float n2 = snoise(vec3(pos.x*0.38 - uTime*0.09,
-                         pos.y*0.42 + uTime*0.07,
+  float n2 = snoise(vec3(pos.x*0.38*uFreq - uTime*0.09,
+                         pos.y*0.42*uFreq + uTime*0.07,
                          uTime*0.14)) * 0.55;
 
-  float n3 = snoise(vec3(pos.x*0.72 + uTime*0.05,
-                         pos.y*0.68,
+  float n3 = snoise(vec3(pos.x*0.72*uFreq + uTime*0.05,
+                         pos.y*0.68*uFreq,
                          uTime*0.10)) * 0.25;
 
-  // Smoothstep para suavizar crestas y valles
   float raw = (n1 + n2 + n3) * uAmplitude;
-  float elevation = raw;
-  pos.z = elevation;
-  vElevation = elevation;
+  pos.z = raw;
+  vElevation = raw;
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
 }`;
@@ -93,6 +92,7 @@ void main(){
 // Valles: #0F172A (Slate oscuro)  →  Medio: #00E2FF (Cian eléctrico)  →  Crestas: #FFD700 (Amarillo Pikachu)
 const fragmentShader = `
 uniform float uAmplitude;
+uniform float uContrast;   // 0.5 = suave (desktop), 0.25 = bandas definidas (mobile)
 varying float vElevation;
 
 const vec3 C_DEEP  = vec3(0.059, 0.090, 0.165);   // #0F172A — slate abyss
@@ -103,8 +103,9 @@ void main(){
   float maxE = uAmplitude * 1.80;
   float t = clamp((vElevation + maxE) / (2.0 * maxE), 0.0, 1.0);
 
-  // Curva suave para evitar transiciones bruscas
-  float ts = smoothstep(0.0, 1.0, t);
+  // uContrast controla la dureza del banding:
+  // 0.5 → suavidad total (desktop), 0.22 → bandas bien marcadas (mobile)
+  float ts = smoothstep(0.5 - uContrast, 0.5 + uContrast, t);
 
   vec3 color;
   if(ts < 0.45)
@@ -112,12 +113,12 @@ void main(){
   else
     color = mix(C_CYAN, C_GOLD, (ts - 0.45) / 0.55);
 
-  // Shading: valles oscuros (20%) → crestas brillantes (100%)
-  float light = 0.20 + 0.80 * ts;
+  // Shading: valles muy oscuros → crestas muy brillantes (mayor contraste)
+  float light = 0.15 + 0.85 * ts;
   color *= light;
 
-  // Halo dorado solo en las crestas más altas
-  float spec = pow(max(ts - 0.78, 0.0) / 0.22, 2.0) * 1.6;
+  // Halo dorado en crestas altas
+  float spec = pow(max(ts - 0.75, 0.0) / 0.25, 2.0) * 1.8;
   color += vec3(spec * 1.0, spec * 0.75, spec * 0.0);
 
   gl_FragColor = vec4(color, 1.0);
@@ -134,22 +135,29 @@ function WaveCanvas() {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
     const isMobile = w < 768;
-    // 256 desktop / 128 tablet / 80 mobile — respeta la petición del cliente
-    const segs = isMobile ? 80 : w < 1280 ? 128 : 256;
+    // 256 desktop / 128 tablet / 96 mobile
+    const segs = isMobile ? 96 : w < 1280 ? 128 : 256;
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    // En mobile Android limitamos DPR a 1 para mantener framerate estable
+    renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 1) : Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(w, h);
     renderer.setClearColor(0x0f172a);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 100);
-    camera.position.set(0, 1.5, 9);
+    // Mobile portrait: cámara más cerca y más baja → las olas se ven más "de frente"
+    camera.position.set(0, isMobile ? 0.5 : 1.5, isMobile ? 6.5 : 9);
 
     const geometry = new THREE.PlaneGeometry(15, 15, segs, segs);
     const uniforms = {
       uTime:      { value: 0.0 },
-      uAmplitude: { value: 1.1 },
+      // Mobile: amplitud ~2× más alta = crestas/valles muy visibles
+      uAmplitude: { value: isMobile ? 2.2 : 1.1 },
+      // Mobile: mayor frecuencia espacial = más crestas en pantalla pequeña
+      uFreq:      { value: isMobile ? 1.7 : 1.0 },
+      // Mobile: bandas de color más definidas (0.22 = banding fuerte, 0.5 = suave)
+      uContrast:  { value: isMobile ? 0.22 : 0.50 },
     };
     const material = new THREE.ShaderMaterial({
       vertexShader,
@@ -159,7 +167,8 @@ function WaveCanvas() {
     });
 
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.rotation.x = -Math.PI / 4;
+    // Mobile: menos inclinación → se ven más olas en lugar de proyectarlas planas
+    mesh.rotation.x = isMobile ? -Math.PI / 5 : -Math.PI / 4;
     scene.add(mesh);
 
     const onResize = () => {
@@ -172,10 +181,12 @@ function WaveCanvas() {
     window.addEventListener("resize", onResize);
 
     const clock = new THREE.Clock();
+    // Mobile: 1.4× más rápido → movimiento claramente visible
+    const speedMult = isMobile ? 1.4 : 1.0;
     let rafId: number;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
-      uniforms.uTime.value = clock.getElapsedTime();
+      uniforms.uTime.value = clock.getElapsedTime() * speedMult;
       renderer.render(scene, camera);
     };
     animate();
