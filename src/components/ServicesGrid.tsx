@@ -1,32 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import appleImg from "@/assets/apple.png";
-import nintendoImg from "@/assets/nintendo.jpeg";
-import xboxImg from "@/assets/xbox.jpeg";
-import notebookImg from "@/assets/notebook.jpeg";
 
 const SERVICES = [
   {
     title: "Apple Total",
     description: `Micro-cirugía electrónica de alta precisión. Reemplazos sin mensajes de "pieza desconocida" ni advertencias de sistema.`,
-    img: appleImg,
+    img: "/apple.png",
   },
   {
     title: "Nintendo Magia",
     description:
       "Acceso a miles de títulos con sistema dual. Arma tu selección en un entorno 100% independiente y sin riesgos.",
-    img: nintendoImg,
+    img: "/nintendo.jpeg",
   },
   {
     title: "Universo Consolas",
     description:
       "Revivimos y potenciamos tu consola favorita. Soporte completo para PlayStation y Xbox de todas las épocas.",
-    img: xboxImg,
+    img: "/xbox.jpeg",
   },
   {
     title: "Cómputo Pro",
     description:
       "Soluciones para Notebooks y Computadoras. Upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
-    img: notebookImg,
+    img: "/notebook.jpeg",
   },
 ];
 
