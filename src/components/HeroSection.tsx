@@ -68,26 +68,25 @@ varying float vElevation;
 void main(){
   vec3 pos = position;
 
-  // uFreq escala las frecuencias espaciales
+  // n1: onda primaria — uFreq la escala para que en mobile se vean 3+ crestas
   float n1 = snoise(vec3(pos.x*0.18*uFreq + uTime*0.18,
                          pos.y*0.18*uFreq,
                          uTime*0.12));
 
-  // Segunda octava más suave (0.45 en vez de 0.55)
-  float n2 = snoise(vec3(pos.x*0.38*uFreq - uTime*0.09,
-                         pos.y*0.42*uFreq + uTime*0.07,
-                         uTime*0.14)) * 0.45;
+  // n2/n3: detalle orgánico — frecuencias fijas (no escaladas por uFreq)
+  // para que no se vuelvan jagged al subir uFreq en mobile
+  float n2 = snoise(vec3(pos.x*0.38 - uTime*0.09,
+                         pos.y*0.42 + uTime*0.07,
+                         uTime*0.14)) * 0.50;
 
-  // Tercera octava casi eliminada — era la que creaba picos agresivos
-  float n3 = snoise(vec3(pos.x*0.72*uFreq + uTime*0.05,
-                         pos.y*0.68*uFreq,
-                         uTime*0.10)) * 0.10;
+  float n3 = snoise(vec3(pos.x*0.72 + uTime*0.05,
+                         pos.y*0.68,
+                         uTime*0.10)) * 0.12;
 
   float raw = (n1 + n2 + n3) * uAmplitude;
 
-  // Saturación suave: aplana las puntas de los picos en vez de cortarlas
-  // x / (1 + k|x|) → conserva la forma en valores bajos, redondea las crestas altas
-  float elevation = raw / (1.0 + 0.45 * abs(raw));
+  // Saturación suave (k=0.20): redondea crestas sin aplastar el rango dinámico
+  float elevation = raw / (1.0 + 0.20 * abs(raw));
   pos.z = elevation;
   vElevation = elevation;
 
@@ -106,11 +105,12 @@ const vec3 C_CYAN  = vec3(0.000, 0.886, 1.000);   // #00E2FF — electric cyan
 const vec3 C_GOLD  = vec3(1.000, 0.843, 0.000);   // #FFD700 — Pikachu gold
 
 void main(){
-  float maxE = uAmplitude * 1.80;
+  // Normalización corregida para soft saturation (k=0.20):
+  // rango efectivo ≈ amplitude*1.62 / (1 + 0.20*amplitude*1.62)
+  // usar 1.10 en vez de 1.80 aprovecha el rango completo de color 0→1
+  float maxE = uAmplitude * 1.10;
   float t = clamp((vElevation + maxE) / (2.0 * maxE), 0.0, 1.0);
 
-  // uContrast controla la dureza del banding:
-  // 0.5 → suavidad total (desktop), 0.22 → bandas bien marcadas (mobile)
   float ts = smoothstep(0.5 - uContrast, 0.5 + uContrast, t);
 
   vec3 color;
@@ -158,12 +158,13 @@ function WaveCanvas() {
     const geometry = new THREE.PlaneGeometry(15, 15, segs, segs);
     const uniforms = {
       uTime:      { value: 0.0 },
-      // Mobile: amplitud moderada — visible pero no agresiva
-      uAmplitude: { value: isMobile ? 1.55 : 1.1 },
-      // Mobile: frecuencia contenida — olas amplias con respiro entre ellas
-      uFreq:      { value: isMobile ? 1.25 : 1.0 },
-      // Mobile: transición definida pero no dura (0.36 = entre suave y marcada)
-      uContrast:  { value: isMobile ? 0.36 : 0.50 },
+      // Mobile: amplitud alta para que la elevación genere contraste de color real
+      uAmplitude: { value: isMobile ? 1.8 : 1.1 },
+      // Mobile: freq 2.8× → ~3 crestas visibles en pantalla portrait
+      // (solo afecta n1; n2/n3 usan freq fija para no perder suavidad)
+      uFreq:      { value: isMobile ? 2.8 : 1.0 },
+      // Mobile: bandas definidas pero no cortantes (0.28)
+      uContrast:  { value: isMobile ? 0.28 : 0.50 },
     };
     const material = new THREE.ShaderMaterial({
       vertexShader,
@@ -187,8 +188,8 @@ function WaveCanvas() {
     window.addEventListener("resize", onResize);
 
     const clock = new THREE.Clock();
-    // Mobile: ligeramente más lento que desktop → flujo líquido, no agitado
-    const speedMult = isMobile ? 0.80 : 1.0;
+    // Mobile: ritmo lento y fluido — como agua, no como máquina
+    const speedMult = isMobile ? 0.85 : 1.0;
     let rafId: number;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
