@@ -205,63 +205,63 @@ const STATS = [
   { value: "24h",  label: "Respuesta"     },
 ];
 
-// ─── Hero Section ─────────────────────────────────────────────────────────────
 const HeroSection = () => (
   <section
     className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden"
     style={{ background: "#0F172A" }}
   >
-    {/* Layer 0 — 3D WebGL terrain */}
+    {/* Canvas 3D */}
     <WaveCanvas />
 
-    {/* Layer 1 — Glass card (z:20) — contains everything EXCEPT the H1 */}
-    <div className="container mx-auto px-4 absolute inset-0 z-20 flex items-center justify-center py-20">
+    {/* Card — único layer, todo el contenido aquí */}
+    <div className="relative z-10 w-full flex items-center justify-center px-4 py-8">
       <motion.div
-        initial={{ opacity: 0, y: 50, scale: 0.94 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="max-w-2xl w-full text-center rounded-3xl p-8 md:p-12"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-xl text-center flex flex-col items-center rounded-2xl px-6 py-8 md:px-12 md:py-12"
         style={{
-          background: "rgba(255,255,255,0.04)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "0 8px 60px rgba(0,226,255,0.06), inset 0 1px 0 rgba(255,255,255,0.05)",
+          background: "rgba(255,255,255,0.06)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.14)",
+          boxShadow: "0 8px 60px rgba(0,226,255,0.06), inset 0 1px 0 rgba(255,255,255,0.08)",
         }}
       >
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.75 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.35, duration: 0.55, ease: "backOut" }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+          transition={{ delay: 0.3, duration: 0.5, ease: "backOut" }}
+          className="inline-flex items-center gap-2 px-4 py-[6px] rounded-full mb-5 md:mb-8"
           style={{
             background: "rgba(0,226,255,0.10)",
             border: "1px solid rgba(0,226,255,0.30)",
           }}
         >
           <span className="w-2 h-2 rounded-full bg-[#00E2FF] animate-glow-pulse" />
-          <span className="text-xs font-mono tracking-widest text-[#00E2FF]">
-            SERVICIO TÉCNICO CERTIFICADO — CHILOÉ
+          <span className="text-[10px] md:text-xs font-mono tracking-widest text-[#00E2FF]">
+            SERVICIO TÉCNICO — CHILOÉ
           </span>
         </motion.div>
 
-        {/* H1 invisible placeholder — reserves vertical space in the card */}
-        <div
-          className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-5"
-          style={{ visibility: "hidden", userSelect: "none" }}
-          aria-hidden="true"
+        {/* H1 */}
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.7 }}
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-white mb-5 md:mb-8"
         >
           Resucitamos tus consolas y tecnología
-        </div>
+        </motion.h1>
 
-        {/* Subtitle */}
+        {/* Subtítulo */}
         <motion.p
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 0.6 }}
-          className="text-base md:text-lg leading-relaxed mb-10 max-w-lg mx-auto"
-          style={{ color: "rgba(255,255,255,0.70)" }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="text-sm md:text-base lg:text-lg leading-relaxed max-w-md mb-8 md:mb-10"
+          style={{ color: "rgba(255,255,255,0.72)" }}
         >
           Reparación profesional de{" "}
           <strong className="text-white/95">iPhone</strong>,{" "}
@@ -270,26 +270,22 @@ const HeroSection = () => (
           <strong className="text-white/95">computadores</strong> en Castro, Chiloé.
         </motion.p>
 
-        {/* CTAs */}
+        {/* Botones */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center mb-10"
+          transition={{ delay: 0.75, duration: 0.6 }}
+          className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto mb-8 md:mb-10"
         >
-          {/* WhatsApp — soft heartbeat */}
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="animate-heartbeat inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-base md:text-lg text-white transition-shadow duration-300"
-            style={{
-              background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
-            }}
+            className="animate-heartbeat inline-flex items-center justify-center gap-2 px-7 py-3 md:py-4 rounded-xl font-bold text-sm md:text-base text-white transition-shadow duration-300"
+            style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)" }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLAnchorElement).style.animationPlayState = "paused";
-              (e.currentTarget as HTMLAnchorElement).style.boxShadow =
-                "0 0 48px rgba(37,211,102,0.65), 0 6px 28px rgba(37,211,102,0.45)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 0 48px rgba(37,211,102,0.65), 0 6px 28px rgba(37,211,102,0.45)";
               (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.04)";
             }}
             onMouseLeave={(e) => {
@@ -298,13 +294,13 @@ const HeroSection = () => (
               (e.currentTarget as HTMLAnchorElement).style.transform = "";
             }}
           >
-            <MessageCircle size={22} />
+            <MessageCircle size={18} />
             Agendar por WhatsApp
           </a>
 
           <a
             href="#servicios"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-sm md:text-base text-white transition-all duration-200"
+            className="inline-flex items-center justify-center gap-2 px-7 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-white transition-all duration-200"
             style={{ border: "1px solid rgba(255,255,255,0.18)" }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(0,226,255,0.5)";
@@ -316,7 +312,7 @@ const HeroSection = () => (
             }}
           >
             Ver Servicios
-            <ArrowRight size={16} />
+            <ArrowRight size={15} />
           </a>
         </motion.div>
 
@@ -324,51 +320,22 @@ const HeroSection = () => (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.7 }}
-          className="flex justify-center gap-8 pt-6"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+          transition={{ delay: 0.95, duration: 0.7 }}
+          className="flex justify-center gap-8 md:gap-10 pt-5 md:pt-6 w-full"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}
         >
           {STATS.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-2xl font-bold" style={{ color: "#00E2FF" }}>
+              <div className="text-xl md:text-2xl font-bold" style={{ color: "#00E2FF" }}>
                 {stat.value}
               </div>
-              <div
-                className="text-xs mt-1 tracking-wide font-mono"
-                style={{ color: "rgba(255,255,255,0.45)" }}
-              >
+              <div className="text-[10px] md:text-xs mt-1 tracking-wide font-mono" style={{ color: "rgba(255,255,255,0.45)" }}>
                 {stat.label}
               </div>
             </div>
           ))}
         </motion.div>
       </motion.div>
-    </div>
-
-    {/* Layer 2 — H1 blend overlay (z:30) — mirrors card structure so alignment is pixel-perfect */}
-    {/* No backdrop-filter ancestor → mix-blend-mode composites against the canvas directly */}
-    <div className="container mx-auto px-4 absolute inset-0 z-30 flex items-center justify-center pointer-events-none py-20">
-      <div className="max-w-2xl w-full text-center rounded-3xl p-8 md:p-12">
-        {/* Badge mirror — invisible spacer with identical markup so height matches exactly */}
-        <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
-          style={{ visibility: "hidden" }}
-          aria-hidden="true"
-        >
-          <span className="w-2 h-2 rounded-full" />
-          <span className="text-xs font-mono tracking-widest">SERVICIO TÉCNICO CERTIFICADO — CHILOÉ</span>
-        </div>
-        {/* H1 — VISIBLE, blends against canvas waves */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.7 }}
-          className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-5"
-          style={{ color: "#ffffff", mixBlendMode: "difference" }}
-        >
-          Resucitamos tus consolas y tecnología
-        </motion.h1>
-      </div>
     </div>
   </section>
 );
