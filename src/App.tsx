@@ -10,6 +10,7 @@ import { GamificationProvider } from "./context/UserStatsContext";
 import { BadgeNotification } from "./components/gamification/BadgeNotification";
 import { LevelUpOverlay } from "./components/gamification/LevelUpOverlay";
 import { OnboardingFlow } from "./components/gamification/OnboardingFlow";
+import { ChatWidget } from "./components/chat/ChatWidget";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <BadgeNotification />
           <Toaster />
           <Sonner />
+          <ChatWidget />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/retro-zone" element={<InteractiveZone />} />
