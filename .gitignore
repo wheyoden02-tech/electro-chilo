@@ -26,3 +26,7 @@ dist-ssr
 # Bun lockfiles (use npm instead for Cloudflare Pages compatibility)
 bun.lock
 bun.lockb
+
+# Claude Code internal state (worktrees, local settings)
+.claude/worktrees/
+.claude/settings.local.json
