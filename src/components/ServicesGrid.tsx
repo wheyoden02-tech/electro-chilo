@@ -25,7 +25,7 @@ const SERVICES = [
   {
     title: "Cómputo Pro",
     description:
-      "Soluciones para Notebooks y Computadoras. Potencia Gamer, upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
+      "Soluciones para Notebooks y Computadoras. Upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
     img: notebookImg,
   },
 ];
