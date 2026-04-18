@@ -3,26 +3,27 @@ import { useEffect, useRef, useState } from "react";
 const SERVICES = [
   {
     title: "Apple Total",
-    description: `Micro-cirugía electrónica de alta precisión. Reemplazos sin mensajes de "pieza desconocida" ni advertencias de sistema.`,
-    img: "/apple.png",
+    description:
+      "Micro-cirugía electrónica de alta precisión. Reemplazos sin mensajes de pieza desconocida ni advertencias del sistema.",
+    img: "/servicios/apple.webp",
   },
   {
     title: "Nintendo Magia",
     description:
-      "Acceso a miles de títulos con sistema dual. Arma tu selección en un entorno 100% independiente y sin riesgos.",
-    img: "/nintendo.jpeg",
+      "Acceso a miles de títulos con sistema dual. Configuración optimizada en entorno 100% independiente y seguro.",
+    img: "/servicios/nintendo.webp",
   },
   {
     title: "Universo Consolas",
     description:
-      "Revivimos y potenciamos tu consola favorita. Soporte completo para PlayStation y Xbox de todas las épocas.",
-    img: "/xbox.jpeg",
+      "Revivimos y potenciamos tu consola favorita. Soporte completo para PlayStation y Xbox de todas las generaciones.",
+    img: "/servicios/consolas.webp",
   },
   {
     title: "Cómputo Pro",
     description:
-      "Soluciones para Notebooks y Computadoras. Upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
-    img: "/notebook.jpeg",
+      "Soluciones para notebooks y computadores. Upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
+    img: "/servicios/notebook.webp",
   },
 ];
 
@@ -33,7 +34,7 @@ const ServicesGrid = () => {
   const lastX = useRef(0);
   const animationRef = useRef<number | null>(null);
 
-  // --- Movimiento automático C2 (izquierda → reinicio)
+  // Movimiento automático infinito
   useEffect(() => {
     const animate = () => {
       if (!isDragging) {
@@ -62,7 +63,7 @@ const ServicesGrid = () => {
     };
   }, [isDragging]);
 
-  // --- Drag manual
+  // Drag desktop
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     lastX.current = e.clientX;
@@ -78,7 +79,7 @@ const ServicesGrid = () => {
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseLeave = () => setIsDragging(false);
 
-  // --- Touch soporte móvil
+  // Touch móvil
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
     lastX.current = e.touches[0].clientX;
@@ -96,27 +97,24 @@ const ServicesGrid = () => {
   return (
     <section
       id="servicios"
-      className="
-        relative w-full h-screen overflow-hidden
-        shingle-pattern flex flex-col items-center justify-center
-      "
+      className="relative w-full min-h-[85vh] py-20 overflow-hidden bg-[#0B0F19]"
     >
+      {/* Radial Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,226,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
+
       {/* Título */}
-      <div className="mb-12 text-center">
-        <span className="text-xs font-mono text-primary tracking-widest uppercase">
+      <div className="relative z-10 mb-16 text-center space-y-4">
+        <span className="text-xs font-mono text-primary tracking-[0.3em] uppercase">
           Servicios
         </span>
-        <h2 className="text-3xl md:text-5xl font-bold mt-3 text-gradient-neon drop-shadow-lg">
+        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-gradient-neon">
           Reparación & Tecnología
         </h2>
       </div>
 
-      {/* Carrusel tipo C2 */}
+      {/* Carrusel */}
       <div
-        className="
-          relative w-full max-w-7xl overflow-hidden select-none
-          px-4 md:px-8
-        "
+        className="relative z-10 w-full max-w-7xl mx-auto overflow-hidden select-none px-4 md:px-8"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
@@ -130,93 +128,32 @@ const ServicesGrid = () => {
           className="flex gap-8 py-6 pointer-events-auto"
           style={{ transform: "translateX(0px)" }}
         >
-          {SERVICES.map((service, index) => (
+          {[...SERVICES, ...SERVICES].map((service, index) => (
             <div
               key={index}
               className="
                 min-w-[260px] md:min-w-[320px]
-                rounded-2xl overflow-hidden 
-                bg-card/40 backdrop-blur-xl 
-                border border-border/50 
-                shadow-[0_0_25px_hsl(var(--neon-cyan)/0.35)]
-                transition-transform duration-300
-                hover:scale-[1.05]
+                rounded-2xl overflow-hidden
+                bg-slate-900/40 backdrop-blur-xl
+                border border-white/10
+                transition-all duration-300
+                hover:border-[#FACC15]
+                hover:shadow-[0_0_30px_rgba(250,204,21,0.25)]
                 cursor-grab active:cursor-grabbing
               "
             >
               <img
                 src={service.img}
                 alt={service.title}
-                className="w-full h-48 md:h-56 object-cover opacity-90"
+                className="w-full h-48 md:h-56 object-cover"
               />
 
-              <div className="p-5 bg-gradient-to-t from-black/70 to-black/20 h-[160px] flex flex-col">
-                <h3
-                  className="
-                    text-lg md:text-xl font-bold 
-                    bg-gradient-to-r from-primary via-accent to-primary 
-                    bg-clip-text text-transparent
-                    drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]
-                  "
-                >
+              <div className="p-6 flex flex-col">
+                <h3 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                   {service.title}
                 </h3>
 
-                <p
-                  className="
-                    text-sm mt-2 leading-relaxed opacity-90
-                    text-transparent bg-clip-text
-                    bg-[linear-gradient(to_right,rgba(0,255,255,0.35),rgba(255,0,255,0.35))]
-                    mix-blend-screen
-                  "
-                >
-                  {service.description}
-                </p>
-              </div>
-            </div>
-          ))}
-
-          {/* Duplicado para loop infinito */}
-          {SERVICES.map((service, index) => (
-            <div
-              key={`copy-${index}`}
-              className="
-                min-w-[260px] md:min-w-[320px]
-                rounded-2xl overflow-hidden 
-                bg-card/40 backdrop-blur-xl 
-                border border-border/50 
-                shadow-[0_0_25px_hsl(var(--neon-cyan)/0.35)]
-                transition-transform duration-300
-                hover:scale-[1.05]
-                cursor-grab active:cursor-grabbing
-              "
-            >
-              <img
-                src={service.img}
-                alt={service.title}
-                className="w-full h-48 md:h-56 object-cover opacity-90"
-              />
-
-              <div className="p-5 bg-gradient-to-t from-black/70 to-black/20 h-[160px] flex flex-col">
-                <h3
-                  className="
-                    text-lg md:text-xl font-bold 
-                    bg-gradient-to-r from-primary via-accent to-primary 
-                    bg-clip-text text-transparent
-                    drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]
-                  "
-                >
-                  {service.title}
-                </h3>
-
-                <p
-                  className="
-                    text-sm mt-2 leading-relaxed opacity-90
-                    text-transparent bg-clip-text
-                    bg-[linear-gradient(to_right,rgba(0,255,255,0.35),rgba(255,0,255,0.35))]
-                    mix-blend-screen
-                  "
-                >
+                <p className="text-sm mt-3 leading-relaxed text-gray-200">
                   {service.description}
                 </p>
               </div>
@@ -225,9 +162,28 @@ const ServicesGrid = () => {
         </div>
       </div>
 
-      <p className="mt-6 text-muted-foreground text-sm">
-        ¿No está lo que buscas? No dudes en contáctarnos!
-      </p>
+      {/* CTA Premium */}
+      <div className="relative z-10 flex justify-center mt-16">
+        <a
+          href="https://wa.me/56929810915"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block"
+        >
+          <button
+            className="
+              px-8 py-4 rounded-full
+              border border-[#00E2FF]
+              text-[#00E2FF] font-semibold tracking-wide
+              transition-all duration-300
+              hover:bg-[#00E2FF] hover:text-black
+              animate-glow-pulse
+            "
+          >
+            CONSULTAR POR OTROS EQUIPOS
+          </button>
+        </a>
+      </div>
     </section>
   );
 };

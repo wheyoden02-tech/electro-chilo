@@ -4,6 +4,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================= */
+/* Console Ticker Animation */
+/* ============================= */
+
+@keyframes console-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.console-track {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  width: max-content;
+  animation: console-scroll 35s linear infinite;
+}
+
+.console-mask {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
 @layer base {
   :root {
     --background: 0 0% 4%;
@@ -359,4 +399,4 @@
 }
 .animate-glow-pulse {
   animation: glow-pulse 2s ease-in-out infinite;
-}
+}

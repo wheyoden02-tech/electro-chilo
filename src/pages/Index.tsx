@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ServicesGrid from "@/components/ServicesGrid";
+import ConsoleTicker from "@/components/ConsoleTicker";
 import TrustSection from "@/components/TrustSection";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -29,10 +30,11 @@ const Index = () => {
   }, [addXP]);
 
   return (
-    <div className="min-h-screen bg-background shingle-pattern">
-      <div className="min-h-screen bg-background/95">
+    <div className="min-h-screen bg-transparent">
+      <div className="min-h-screen bg-transparent">
         <Navbar />
         <HeroSection />
+        <ConsoleTicker />
         <ServicesGrid />
         <TrustSection />
         <Footer />
