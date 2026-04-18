@@ -93,39 +93,43 @@ void main(){
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos,1.0);
 }`;
 
-// ─── Fragment Shader — Paleta "Pikachu / Plasma Premium" ─────────────────────
-// Valles: #0F172A (Slate oscuro)  →  Medio: #00E2FF (Cian eléctrico)  →  Crestas: #FFD700 (Amarillo Pikachu)
+// ─── Fragment Shader — Paleta "Plasma Premium" 5 paradas ────────────────────
+// Valles → Púrpura → Cian → Esmeralda → Oro — cada banda de ola muestra un tono distinto
 const fragmentShader = `
 uniform float uAmplitude;
-uniform float uContrast;   // 0.5 = suave (desktop), 0.25 = bandas definidas (mobile)
+uniform float uContrast;
 varying float vElevation;
 
-const vec3 C_DEEP  = vec3(0.059, 0.090, 0.165);   // #0F172A — slate abyss
-const vec3 C_CYAN  = vec3(0.000, 0.886, 1.000);   // #00E2FF — electric cyan
-const vec3 C_GOLD  = vec3(1.000, 0.843, 0.000);   // #FFD700 — Pikachu gold
+const vec3 C_ABYSS   = vec3(0.059, 0.090, 0.165);   // #0F172A — slate profundo
+const vec3 C_PURPLE  = vec3(0.420, 0.129, 0.659);   // #6B21A8 — purple-700
+const vec3 C_CYAN    = vec3(0.000, 0.886, 1.000);   // #00E2FF — cian eléctrico
+const vec3 C_EMERALD = vec3(0.102, 0.827, 0.627);   // #1AD3A0 — esmeralda
+const vec3 C_GOLD    = vec3(1.000, 0.843, 0.000);   // #FFD700 — Pikachu gold
 
 void main(){
-  // Normalización corregida para soft saturation (k=0.20):
-  // rango efectivo ≈ amplitude*1.62 / (1 + 0.20*amplitude*1.62)
-  // usar 1.10 en vez de 1.80 aprovecha el rango completo de color 0→1
   float maxE = uAmplitude * 1.10;
   float t = clamp((vElevation + maxE) / (2.0 * maxE), 0.0, 1.0);
 
   float ts = smoothstep(0.5 - uContrast, 0.5 + uContrast, t);
 
+  // 5 paradas distribuidas: cada banda de ola tiene su color propio
   vec3 color;
-  if(ts < 0.45)
-    color = mix(C_DEEP, C_CYAN, ts / 0.45);
+  if(ts < 0.25)
+    color = mix(C_ABYSS, C_PURPLE, ts / 0.25);
+  else if(ts < 0.50)
+    color = mix(C_PURPLE, C_CYAN, (ts - 0.25) / 0.25);
+  else if(ts < 0.75)
+    color = mix(C_CYAN, C_EMERALD, (ts - 0.50) / 0.25);
   else
-    color = mix(C_CYAN, C_GOLD, (ts - 0.45) / 0.55);
+    color = mix(C_EMERALD, C_GOLD, (ts - 0.75) / 0.25);
 
-  // Shading: valles muy oscuros → crestas muy brillantes (mayor contraste)
-  float light = 0.15 + 0.85 * ts;
+  // Shading: valles oscuros → crestas brillantes
+  float light = 0.18 + 0.82 * ts;
   color *= light;
 
-  // Halo dorado en crestas altas
-  float spec = pow(max(ts - 0.75, 0.0) / 0.25, 2.0) * 1.8;
-  color += vec3(spec * 1.0, spec * 0.75, spec * 0.0);
+  // Halo dorado sutil en las crestas más altas
+  float spec = pow(max(ts - 0.80, 0.0) / 0.20, 2.0) * 1.2;
+  color += vec3(spec * 0.9, spec * 0.65, spec * 0.0);
 
   gl_FragColor = vec4(color, 1.0);
 }`;
