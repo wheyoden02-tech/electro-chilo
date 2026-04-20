@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 const WEBHOOK_URL = import.meta.env.DEV
   ? '/webhook/electrorepara-chat'
-  : import.meta.env.VITE_N8N_WEBHOOK_URL;
+  : 'https://n8n.electrorepara.cl/webhook/electrorepara-chat';
 
 /*
   Imagen oficial estilo sprite (repositorio oficial PokeAPI sprites)
