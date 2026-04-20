@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
+const WEBHOOK_URL = import.meta.env.DEV
+  ? '/webhook/electrorepara-chat'
+  : import.meta.env.VITE_N8N_WEBHOOK_URL;
 
 /*
   Imagen oficial estilo sprite (repositorio oficial PokeAPI sprites)
@@ -54,17 +56,17 @@ export const ChatWidget: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: userMessage.content,
+          chatInput: userMessage.content,
           sessionId,
-          source: "web-electrorepara",
         }),
       });
 
-      const data = await response.json();
+      const rawText = await response.text();
+      const cleaned = rawText.replace(/^Response Body:\s*/i, "").trim();
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.reply || "..." },
+        { role: "assistant", content: cleaned || "..." },
       ]);
     } catch {
       setMessages((prev) => [
@@ -220,7 +222,7 @@ export const ChatWidget: React.FC = () => {
               </div>
             ))}
 
-            {loading && <div>{" > Procesando consulta..."}</div>}
+            {loading && <div>{" > Oak está escribiendo..."}</div>}
 
             <div ref={messagesEndRef} />
           </div>
@@ -246,6 +248,7 @@ export const ChatWidget: React.FC = () => {
                 borderRadius: "8px",
                 border: "none",
                 fontFamily: "monospace",
+                color: "#1e293b",
               }}
             />
             <button

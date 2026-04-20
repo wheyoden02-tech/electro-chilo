@@ -14,6 +14,13 @@ export default defineConfig(({ mode }) => ({
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
       "Cross-Origin-Embedder-Policy": "unsafe-none",
     },
+    proxy: {
+      '/webhook': {
+        target: 'https://n8n.electrorepara.cl',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
