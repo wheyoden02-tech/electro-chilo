@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { GameData, fetchGamesData } from '@/lib/googleSheets';
 import { GameList } from '@/components/magia/GameList';
 import { MagiaSidebar } from '@/components/magia/MagiaSidebar';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export default function MagiaDashboard() {
+  const navigate = useNavigate();
   const [games, setGames] = useState<GameData[]>([]);
   const [selectedGames, setSelectedGames] = useState<GameData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +51,13 @@ export default function MagiaDashboard() {
 
   return (
     <div className="min-h-screen bg-zinc-950 font-sans text-zinc-50 selection:bg-[#00ffcc] selection:text-black">
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 z-50 flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Volver
+      </button>
       {/* Decorative background grid */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
 
@@ -62,9 +71,10 @@ export default function MagiaDashboard() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="lg:col-span-8 xl:col-span-9">
-            <div className="h-[calc(100vh-12rem)] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-9 xl:col-span-9">
+            <div className="max-h-[55vh] overflow-y-auto custom-scroll rounded-xl border border-white/10 bg-black/30 p-3
+                            lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto">
               <GameList 
                 games={games} 
                 selectedGames={selectedGames} 
@@ -73,8 +83,8 @@ export default function MagiaDashboard() {
             </div>
           </div>
           
-          <div className="lg:col-span-4 xl:col-span-3">
-            <div className="sticky top-8 h-[calc(100vh-4rem)]">
+          <div className="lg:col-span-3 xl:col-span-3">
+            <div className="lg:sticky lg:top-8 lg:h-[calc(100vh-4rem)] h-auto">
               <MagiaSidebar selectedGames={selectedGames} totalGB={totalGB} />
             </div>
           </div>

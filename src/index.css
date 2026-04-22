@@ -4,6 +4,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   Custom Elegant Scrollbar
+   ========================= */
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #00ffcc22 transparent;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #00ffcc55, #00ffccaa);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #00ffcc88, #00ffcc);
+}
+
 /* ============================= */
 /* Console Ticker Animation */
 /* ============================= */
@@ -112,16 +140,29 @@
     image-rendering: pixelated;
   }
 
-  /* Ocultar completamente la scrollbar pero mantener scroll funcional */
-  html,
-  body {
-    -ms-overflow-style: none;  /* IE y Edge antiguos */
-    scrollbar-width: none;     /* Firefox */
+  /* Scroll global elegante (reemplaza estilo Windows) */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #00ffcc55 transparent;
   }
 
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar {
-    display: none;             /* Chrome, Safari, Edge */
+  html::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #00ffcc66, #00ffcc);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #00ffcc99, #00ffaa);
   }
 }
 

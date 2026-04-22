@@ -42,10 +42,10 @@ export const MagiaSidebar: React.FC<MagiaSidebarProps> = ({ selectedGames, total
       nombre,
       email,
       whatsapp,
-      capacidad: totalGB,
-      necesita_sd: requiereSD ? 'SÍ' : 'NO',
-      juegos_list: juegosFormateados,
-      juegos_extra: juegosExtra.trim() !== '' ? juegosExtra : 'Ninguno'
+      juegosSeleccionados: selectedGames,
+      totalGB,
+      requiereSD,
+      juegosExtra: juegosExtra.trim() !== '' ? juegosExtra : 'Ninguno'
     };
 
     const success = await sendWebhookData(payload);
@@ -103,8 +103,11 @@ export const MagiaSidebar: React.FC<MagiaSidebarProps> = ({ selectedGames, total
       </div>
 
       {/* Summary of items */}
-      <div className="mb-6 flex-1 overflow-auto rounded-lg bg-white/5 p-4">
-        <h3 className="mb-3 text-sm font-semibold text-zinc-300">Juegos Seleccionados ({selectedGames.length})</h3>
+      <div className="mb-6 flex-[1.5] overflow-auto rounded-lg bg-white/5 p-5 min-h-[260px]">
+        <h3 className="mb-1 text-base font-semibold text-zinc-200">Juegos Seleccionados ({selectedGames.length})</h3>
+        <p className="mb-4 text-xs text-zinc-500">
+          Revisa tu selección y asegúrate de completar tus datos de contacto más abajo para que podamos confirmar tu Magia y coordinar la instalación.
+        </p>
         {selectedGames.length === 0 ? (
           <p className="text-sm text-zinc-500">Aún no hay juegos en tu lista.</p>
         ) : (
