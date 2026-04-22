@@ -4,7 +4,7 @@ import Scene from "./Scene"
 
 export default function Hero3D() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-black">
+    <section className="relative min-h-[100svh] overflow-hidden bg-black">
       
       {/* Fondo */}
       <div className="absolute inset-0 -z-30 bg-gradient-to-br from-black via-zinc-900 to-black" />
@@ -23,7 +23,7 @@ export default function Hero3D() {
       </div>
 
       {/* Contenido */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
+      <div className="relative z-10 flex items-center justify-center px-6 min-h-[100svh]">
         <div className="text-white text-center max-w-4xl space-y-6">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
             Expertos en Consolas <br className="hidden md:block" />
