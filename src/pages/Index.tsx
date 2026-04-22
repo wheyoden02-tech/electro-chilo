@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import Hero3D from "@/components/hero3d/Hero3D";
 import ServicesGrid from "@/components/ServicesGrid";
 import ConsoleTicker from "@/components/ConsoleTicker";
 import TrustSection from "@/components/TrustSection";
@@ -8,6 +9,7 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { useGamification } from "@/hooks/useGamification";
 import { useKonamiCode } from "@/hooks/useKonamiCode";
 import { useEffect } from "react";
+import { initSmoothScroll } from "@/lib/smoothScroll";
 
 const Index = () => {
   const { addXP } = useGamification();
@@ -19,12 +21,15 @@ const Index = () => {
 
   // Small scroll xp reward
   useEffect(() => {
+    initSmoothScroll()
+
     const handleScroll = () => {
       if (window.scrollY > 800) {
         addXP(2, "scroll-trust");
         window.removeEventListener("scroll", handleScroll);
       }
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [addXP]);
@@ -33,7 +38,7 @@ const Index = () => {
     <div className="min-h-screen bg-transparent">
       <div className="min-h-screen bg-transparent">
         <Navbar />
-        <HeroSection />
+        <Hero3D />
         <ConsoleTicker />
         <ServicesGrid />
         <TrustSection />
