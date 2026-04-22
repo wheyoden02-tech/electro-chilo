@@ -111,6 +111,29 @@
   .pixelated {
     image-rendering: pixelated;
   }
+
+  /* Custom Modern Scrollbars for Windows/Webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--neon-cyan) / 0.4);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--neon-green) / 0.8);
+  }
+  
+  /* Firefox standard scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--neon-cyan) / 0.4) hsl(var(--background));
+  }
 }
 
 @layer components {

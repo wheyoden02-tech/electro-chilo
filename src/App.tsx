@@ -11,6 +11,7 @@ import { BadgeNotification } from "./components/gamification/BadgeNotification";
 import { LevelUpOverlay } from "./components/gamification/LevelUpOverlay";
 import { OnboardingFlow } from "./components/gamification/OnboardingFlow";
 import { ChatWidget } from "./components/chat/ChatWidget";
+import MagiaDashboard from "./pages/MagiaDashboard";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/retro-zone" element={<InteractiveZone />} />
             <Route path="/interactive-zone" element={<InteractiveZone />} />
+            <Route path="/magia" element={<MagiaDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

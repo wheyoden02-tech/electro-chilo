@@ -26,6 +26,14 @@ export const ChatWidget: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [sessionId, setSessionId] = useState<string>("");
+  const [showTooltip, setShowTooltip] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowTooltip(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("electrorepara_session_id");
@@ -84,7 +92,7 @@ export const ChatWidget: React.FC = () => {
   return (
     <>
       {/* Tooltip estilo Pokédex */}
-      {!isOpen && (
+      {!isOpen && showTooltip && (
         <div
           style={{
             position: "fixed",

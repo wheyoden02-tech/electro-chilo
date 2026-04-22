@@ -102,6 +102,14 @@ const Navbar = () => {
               </Link>
 
               <Link
+                to="/magia"
+                onClick={() => setIsOpen(false)}
+                className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-[#00ffcc] hover:text-[#00ccaa] transition-colors"
+              >
+                Magia Nintendo
+              </Link>
+
+              <Link
                 to="/retro-zone"
                 onClick={() => setIsOpen(false)}
                 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white hover:text-[#00E2FF] transition-colors"
