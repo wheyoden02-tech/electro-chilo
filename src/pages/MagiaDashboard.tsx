@@ -64,10 +64,10 @@ export default function MagiaDashboard() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-8">
           <h1 className="text-4xl font-black uppercase tracking-tight text-white md:text-6xl">
-            SISTEMA DE <span className="text-[#00ffcc]">MAGIA</span>
+            Sistema de <span className="text-[#00ffcc]">Magia</span> para Nintendo
           </h1>
           <p className="mt-2 text-lg text-zinc-400">
-            Selecciona tu arsenal. Nosotros hacemos el resto.
+            Selecciona los juegos que necesites, completa tus datos y envía el formulario. Nosotros comenzaremos a descargar tu lista de juegos de inmediato.
           </p>
         </header>
 
