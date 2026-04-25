@@ -25,23 +25,30 @@ export default function Hero3D() {
       {/* Contenido */}
       <div className="relative z-10 flex items-center justify-center px-6 min-h-[100svh]">
         <div className="text-white text-center max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
-            Expertos en Consolas <br className="hidden md:block" />
-            y Smartphones
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold leading-snug md:leading-tight">
+            Expertos en iPhone, Nintendo <br className="hidden md:block" />
+            y Consolas de Última Generación.
           </h1>
 
-          <p className="text-zinc-300 text-lg md:text-xl max-w-xl mx-auto lg:mx-0">
-            Reparamos lo que otros dan por perdido. Diagnóstico preciso,
-            microsoldadura avanzada y repuestos garantizados para tu equipo.
+          <p className="text-zinc-300 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+            Especialistas en iPhone, consolas Nintendo y equipos de última generación como PS5 y Xbox Series.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-3 bg-red-600 hover:bg-red-700 transition rounded-lg font-semibold">
-              Diagnosticar mi equipo
-            </button>
-            <button className="px-8 py-3 border border-white/30 hover:border-white transition rounded-lg font-semibold">
-              Cotizar reparación
-            </button>
+            <a
+              href="https://wa.me/56929810915?text=Hola%20Jorge,%20necesito%20ayuda%20con%20mi%20iPhone%20o%20consola"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 bg-[#E60012] hover:bg-[#cc0010] transition rounded-lg font-semibold"
+            >
+              Habla directo con el experto
+            </a>
+            <a
+              href="/magia"
+              className="px-8 py-3 border border-white/30 hover:border-white transition rounded-lg font-semibold"
+            >
+              Elige tu lista de juegos
+            </a>
           </div>
         </div>
       </div>

@@ -23,13 +23,13 @@
             initial={{ y: -80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="w-full max-w-7xl h-20 bg-[#0B0F19]/80 backdrop-blur-xl rounded-2xl border border-white/10 flex items-center justify-between px-8 relative"
+            className="w-full max-w-7xl h-20 bg-card/80 backdrop-blur-xl rounded-2xl border border-border/60 flex items-center justify-between px-8 relative"
           >
             {/* Branding Izquierda */}
             <Link to="/" className="select-none">
-              <h1 className="font-black tracking-tighter uppercase text-xl md:text-2xl">
-                <span className="text-white">ELECTRO</span>
-                <span className="bg-gradient-to-r from-[#00E2FF] to-[#FACC15] bg-clip-text text-transparent">
+              <h1 className="font-black tracking-tighter uppercase text-lg sm:text-xl md:text-2xl">
+                <span className="text-foreground">ELECTRO</span>
+                <span className="text-primary">
                   REPARA
                 </span>
               </h1>

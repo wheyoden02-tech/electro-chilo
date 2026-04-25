@@ -74,33 +74,39 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 95%;
+    /* === Nueva paleta Apple + Nintendo Switch === */
 
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 95%;
+    /* Base neutra estilo Apple */
+    --background: 220 20% 6%;
+    --foreground: 0 0% 98%;
 
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 95%;
+    --card: 220 18% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --primary: 145 100% 45%;
-    --primary-foreground: 0 0% 4%;
+    --popover: 220 18% 10%;
+    --popover-foreground: 0 0% 98%;
 
-    --secondary: 185 100% 50%;
-    --secondary-foreground: 0 0% 4%;
+    /* Nintendo Switch Red */
+    --primary: 355 100% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 60%;
+    /* Switch Blue refinado */
+    --secondary: 196 100% 45%;
+    --secondary-foreground: 0 0% 100%;
 
-    --accent: 185 100% 50%;
-    --accent-foreground: 0 0% 4%;
+    --accent: 196 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 95%;
+    /* Neutrales balanceados */
+    --muted: 220 15% 16%;
+    --muted-foreground: 0 0% 70%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 145 100% 45%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 355 100% 45%;
 
     --radius: 0.75rem;
 
@@ -452,4 +458,11 @@
 }
 .animate-glow-pulse {
   animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* === Console Ticker Floating Animation === */
+@keyframes tickerFloat {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
 }

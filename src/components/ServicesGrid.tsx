@@ -2,28 +2,34 @@ import { useEffect, useRef, useState } from "react";
 
 const SERVICES = [
   {
-    title: "Apple Total",
+    title: "Nintendo Switch",
     description:
-      "Micro-cirugía electrónica de alta precisión. Reemplazos sin mensajes de pieza desconocida ni advertencias del sistema.",
-    img: "/servicios/apple.webp",
+      "Magia Nintendo profesional. Liberación de consola, instalación de juegos, mantención preventiva y optimización completa para un rendimiento sin límites.",
+    img: "/servicios/Nintendo.png",
   },
   {
-    title: "Nintendo Magia",
+    title: "Reparación Profesional iPhone",
     description:
-      "Acceso a miles de títulos con sistema dual. Configuración optimizada en entorno 100% independiente y seguro.",
-    img: "/servicios/nintendo.webp",
+      "Reparamos tu iPhone manteniendo su integridad original. Pantallas y baterías sin activar el mensaje de 'pieza desconocida'.",
+    img: "/servicios/Iphone.png",
   },
   {
-    title: "Universo Consolas",
+    title: "PS5 & Xbox Series",
     description:
-      "Revivimos y potenciamos tu consola favorita. Soporte completo para PlayStation y Xbox de todas las generaciones.",
-    img: "/servicios/consolas.webp",
+      "Diagnóstico avanzado, limpieza interna, cambio de pasta térmica y reparación de fallas críticas. Rendimiento estable y sin sobrecalentamiento.",
+    img: "/servicios/Consolas.png",
   },
   {
-    title: "Cómputo Pro",
+    title: "Drift de Mandos",
     description:
-      "Soluciones para notebooks y computadores. Upgrades de hardware y rescate crítico de datos para todo tipo de equipos.",
-    img: "/servicios/notebook.webp",
+      "Reparación precisa de drift en Joy‑Con, DualSense y controles Xbox. Recupera la precisión original de tu mando.",
+    img: "/servicios/Joystick.png",
+  },
+  {
+    title: "Diagnóstico & Baterías",
+    description:
+      "Testeo electrónico avanzado, reemplazo certificado de baterías y diagnóstico integral para equipos con fallas intermitentes o críticas.",
+    img: "/servicios/Baterias.png",
   },
 ];
 
@@ -34,11 +40,10 @@ const ServicesGrid = () => {
   const lastX = useRef(0);
   const animationRef = useRef<number | null>(null);
 
-  // Movimiento automático infinito
   useEffect(() => {
     const animate = () => {
       if (!isDragging) {
-        position.current -= 0.4;
+        position.current -= 0.35;
       }
 
       const track = trackRef.current;
@@ -63,7 +68,6 @@ const ServicesGrid = () => {
     };
   }, [isDragging]);
 
-  // Drag desktop
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     lastX.current = e.clientX;
@@ -79,7 +83,6 @@ const ServicesGrid = () => {
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseLeave = () => setIsDragging(false);
 
-  // Touch móvil
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
     lastX.current = e.touches[0].clientX;
@@ -97,22 +100,20 @@ const ServicesGrid = () => {
   return (
     <section
       id="servicios"
-      className="relative w-full min-h-[85vh] py-20 overflow-hidden bg-[#0B0F19]"
+      className="relative w-full min-h-[90vh] py-24 overflow-hidden bg-background"
     >
-      {/* Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,226,255,0.05)_0%,_transparent_70%)] pointer-events-none" />
+      {/* Glow dinámico */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_hsl(var(--primary)/0.08)_0%,_transparent_70%)] pointer-events-none" />
 
-      {/* Título */}
-      <div className="relative z-10 mb-16 text-center space-y-4">
+      <div className="relative z-10 mb-20 text-center space-y-4">
         <span className="text-xs font-mono text-primary tracking-[0.3em] uppercase">
-          Servicios
+          Servicios Especializados
         </span>
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-gradient-neon">
-          Reparación & Tecnología
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight">
+          Reparación & Tecnología Premium
         </h2>
       </div>
 
-      {/* Carrusel */}
       <div
         className="relative z-10 w-full max-w-7xl mx-auto overflow-hidden select-none px-4 md:px-8"
         onMouseMove={handleMouseMove}
@@ -125,35 +126,36 @@ const ServicesGrid = () => {
       >
         <div
           ref={trackRef}
-          className="flex gap-8 py-6 pointer-events-auto"
+          className="flex gap-10 py-8"
           style={{ transform: "translateX(0px)" }}
         >
           {[...SERVICES, ...SERVICES].map((service, index) => (
             <div
               key={index}
               className="
-                min-w-[260px] md:min-w-[320px]
-                rounded-2xl overflow-hidden
-                bg-slate-900/40 backdrop-blur-xl
-                border border-white/10
-                transition-all duration-300
-                hover:border-[#FACC15]
-                hover:shadow-[0_0_30px_rgba(250,204,21,0.25)]
+                min-w-[280px] sm:min-w-[320px] md:min-w-[380px]
+                rounded-3xl overflow-hidden
+                bg-card/60 backdrop-blur-2xl
+                border border-border/60
+                transition-all duration-500
+                hover:scale-105
+                hover:border-primary
+                hover:shadow-[0_0_40px_hsl(var(--primary)/0.35)]
                 cursor-grab active:cursor-grabbing
               "
             >
               <img
                 src={service.img}
                 alt={service.title}
-                className="w-full h-48 md:h-56 object-cover"
+                className="w-full h-52 sm:h-60 md:h-64 object-cover"
               />
 
-              <div className="p-6 flex flex-col">
-                <h3 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              <div className="p-6 md:p-8 flex flex-col">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-primary">
                   {service.title}
                 </h3>
 
-                <p className="text-sm mt-3 leading-relaxed text-gray-200">
+                <p className="text-sm sm:text-base mt-4 leading-relaxed text-muted-foreground">
                   {service.description}
                 </p>
               </div>
@@ -162,25 +164,23 @@ const ServicesGrid = () => {
         </div>
       </div>
 
-      {/* CTA Premium */}
-      <div className="relative z-10 flex justify-center mt-16">
+      <div className="relative z-10 flex justify-center mt-20">
         <a
           href="https://wa.me/56929810915"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block"
         >
           <button
             className="
-              px-8 py-4 rounded-full
-              border border-[#00E2FF]
-              text-[#00E2FF] font-semibold tracking-wide
+              px-10 py-4 rounded-full
+              bg-primary text-primary-foreground
+              font-semibold tracking-wide
               transition-all duration-300
-              hover:bg-[#00E2FF] hover:text-black
-              animate-glow-pulse
+              hover:scale-105
+              hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)]
             "
           >
-            CONSULTAR POR OTROS EQUIPOS
+            Consultar otro equipo
           </button>
         </a>
       </div>
