@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 
 const SERVICES = [
   {
@@ -34,69 +33,6 @@ const SERVICES = [
 ];
 
 const ServicesGrid = () => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const position = useRef(0);
-  const lastX = useRef(0);
-  const animationRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    const animate = () => {
-      if (!isDragging) {
-        position.current -= 0.35;
-      }
-
-      const track = trackRef.current;
-      if (track) {
-        const totalWidth = track.scrollWidth;
-        const visibleWidth = track.offsetWidth;
-
-        if (Math.abs(position.current) >= totalWidth - visibleWidth) {
-          position.current = 0;
-        }
-
-        track.style.transform = `translateX(${position.current}px)`;
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [isDragging]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    lastX.current = e.clientX;
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    const delta = e.clientX - lastX.current;
-    lastX.current = e.clientX;
-    position.current += delta;
-  };
-
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
-    lastX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const delta = e.touches[0].clientX - lastX.current;
-    lastX.current = e.touches[0].clientX;
-    position.current += delta;
-  };
-
-  const handleTouchEnd = () => setIsDragging(false);
-
   return (
     <section
       id="servicios"
@@ -114,34 +50,19 @@ const ServicesGrid = () => {
         </h2>
       </div>
 
-      <div
-        className="relative z-10 w-full max-w-7xl mx-auto overflow-hidden select-none px-4 md:px-8"
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div
-          ref={trackRef}
-          className="flex gap-10 py-8"
-          style={{ transform: "translateX(0px)" }}
-        >
-          {[...SERVICES, ...SERVICES].map((service, index) => (
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 py-8">
+          {SERVICES.map((service, index) => (
             <div
               key={index}
               className="
-                min-w-[280px] sm:min-w-[320px] md:min-w-[380px]
                 rounded-3xl overflow-hidden
                 bg-card/60 backdrop-blur-2xl
                 border border-border/60
                 transition-all duration-500
-                hover:scale-105
+                hover:-translate-y-1
                 hover:border-primary
                 hover:shadow-[0_0_40px_hsl(var(--primary)/0.35)]
-                cursor-grab active:cursor-grabbing
               "
             >
               <img

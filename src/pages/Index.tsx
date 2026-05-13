@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import Hero3D from "@/components/hero3d/Hero3D";
 import ServicesGrid from "@/components/ServicesGrid";
+import AmpsentrixSection from "@/components/AmpsentrixSection";
 import ConsoleTicker from "@/components/ConsoleTicker";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -38,6 +39,7 @@ const Index = () => {
       <div className="min-h-screen bg-transparent">
         <Navbar />
         <Hero3D />
+        <AmpsentrixSection />
         <ConsoleTicker />
         <ServicesGrid />
         <Footer />
