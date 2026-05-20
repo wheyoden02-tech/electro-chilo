@@ -30,28 +30,120 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
+const AUTOPLAY_INTERVAL = 5200;
+const RESUME_DELAY_AFTER_INTERACTION = 10000;
+
 const AmpsentrixSection = () => {
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const apiRef = useRef<CarouselApi | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const isInteractingRef = useRef(false);
+
+  const stopAutoplay = () => {
+    if (autoplayRef.current) {
+      clearInterval(autoplayRef.current);
+      autoplayRef.current = null;
+    }
+  };
+
+  const clearResumeTimeout = () => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
+    }
+  };
+
+  const startAutoplay = () => {
+    if (!apiRef.current || isInteractingRef.current || autoplayRef.current) return;
+
+    autoplayRef.current = setInterval(() => {
+      apiRef.current?.scrollNext();
+    }, AUTOPLAY_INTERVAL);
+  };
+
+  const scheduleAutoplayResume = (delay = RESUME_DELAY_AFTER_INTERACTION) => {
+    clearResumeTimeout();
+    stopAutoplay();
+
+    resumeTimeoutRef.current = setTimeout(() => {
+      if (!isInteractingRef.current) {
+        startAutoplay();
+      }
+    }, delay);
+  };
 
   useEffect(() => {
     return () => {
-      if (autoplayRef.current) {
-        clearInterval(autoplayRef.current);
-      }
+      stopAutoplay();
+      clearResumeTimeout();
+    };
+  }, []);
+
+  useEffect(() => {
+    const container = sectionRef.current;
+    if (!container) return;
+
+    const onMouseEnter = () => {
+      isInteractingRef.current = true;
+      stopAutoplay();
+      clearResumeTimeout();
+    };
+
+    const onMouseLeave = () => {
+      isInteractingRef.current = false;
+      scheduleAutoplayResume(1200);
+    };
+
+    const onFocusIn = () => {
+      isInteractingRef.current = true;
+      stopAutoplay();
+      clearResumeTimeout();
+    };
+
+    const onFocusOut = (event: FocusEvent) => {
+      const nextTarget = event.relatedTarget as Node | null;
+      if (nextTarget && container.contains(nextTarget)) return;
+
+      isInteractingRef.current = false;
+      scheduleAutoplayResume(1200);
+    };
+
+    const onPointerDown = () => {
+      isInteractingRef.current = true;
+      stopAutoplay();
+      clearResumeTimeout();
+    };
+
+    const onPointerUp = () => {
+      isInteractingRef.current = false;
+      scheduleAutoplayResume();
+    };
+
+    container.addEventListener("mouseenter", onMouseEnter);
+    container.addEventListener("mouseleave", onMouseLeave);
+    container.addEventListener("focusin", onFocusIn);
+    container.addEventListener("focusout", onFocusOut);
+    container.addEventListener("pointerdown", onPointerDown);
+    container.addEventListener("pointerup", onPointerUp);
+
+    return () => {
+      container.removeEventListener("mouseenter", onMouseEnter);
+      container.removeEventListener("mouseleave", onMouseLeave);
+      container.removeEventListener("focusin", onFocusIn);
+      container.removeEventListener("focusout", onFocusOut);
+      container.removeEventListener("pointerdown", onPointerDown);
+      container.removeEventListener("pointerup", onPointerUp);
     };
   }, []);
 
   const handleSetApi = (api: CarouselApi) => {
     apiRef.current = api;
+    startAutoplay();
 
-    if (autoplayRef.current) {
-      clearInterval(autoplayRef.current);
-    }
-
-    autoplayRef.current = setInterval(() => {
-      apiRef.current?.scrollNext();
-    }, 2400);
+    api.on("select", () => {
+      scheduleAutoplayResume();
+    });
   };
 
   return (
@@ -91,6 +183,7 @@ const AmpsentrixSection = () => {
         </motion.div>
 
         <motion.div
+          ref={sectionRef}
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
