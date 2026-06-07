@@ -32,7 +32,7 @@ const Footer = () => {
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
               Diagnóstico avanzado, micro‑soldadura profesional y reparación de
               consolas de última generación, sin riesgos de envío ni semanas de espera.
-              En Castro trabajas directamente con el técnico, sin intermediarios.
+              En Castro y Valdivia trabajas directamente con el técnico, sin intermediarios.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 text-sm md:text-base">
@@ -73,7 +73,7 @@ const Footer = () => {
               Tecnología avanzada desde el Archipiélago.
             </p>
             <p className="text-muted-foreground text-sm mt-4">
-              Castro, Chiloé · Chile
+              Castro, Chiloé · Chile - Valdivia, Los Ríos · Chile
             </p>
           </div>
 
